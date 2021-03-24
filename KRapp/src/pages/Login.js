@@ -7,7 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
-const IPADDR = '172.30.1.49:3000';
+const IPADDR = '172.30.86.77:3000';
 
 const Login = ({navigation, route}) => {
   const [id, setId] = useState('');
@@ -15,36 +15,9 @@ const Login = ({navigation, route}) => {
   let idref = useRef();
   let pwref = useRef();
 
-  // go to DB server to check validation
-  const _submitClick = () => {
-    const option = {
-      method: 'POST',
-      mode: 'cors',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json;charset=UTF-8',
-      },
-      body: JSON.stringify({
-        id: id,
-        pw: pw,
-      }),
-    };
-
-    fetch(`http://${IPADDR}/userinfo`, option)
-      .then(res => res.json())
-      .then(json => {
-        console.log(json);
-      });
-
-    // db연결 하면 서버에서 진행할 것
-    // reg = /^((?=.*?[A-Z])|(?=.*?[a-z]))(?=.*?[0-9])(?=.*?[#?!@$%^&*-.]).{8,}$/;
-    // if (reg.test(pw) == false) {
-    //   alert('try again!');
-    // } else {
-    //   alert(`submit!\nid : ${id}\npw : ${pw}`);
-    // }
-    // idref.clear();
-    // pwref.clear();
+  const _gotoRegister = () => {
+    console.log('reg');
+    navigation.push('Register');
   };
 
   return (
@@ -70,9 +43,10 @@ const Login = ({navigation, route}) => {
           onChangeText={txt => {
             setPw(txt);
           }}></TextInput>
+        <Text onPress={_gotoRegister}>회원 가입</Text>
       </View>
       <View style={styles.submitV}>
-        <TouchableOpacity style={styles.submitbtn} onPress={_submitClick} />
+        <TouchableOpacity style={styles.submitbtn} />
       </View>
     </View>
   );
