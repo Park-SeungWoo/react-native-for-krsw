@@ -3,8 +3,8 @@ import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import Home from './src/pages/Home';
-import Login from './src/pages/Login';
-import Register from './src/pages/Register';
+import Login from './src/pages/userinfos/Login';
+import Register from './src/pages/userinfos/Register';
 
 const Stack = createStackNavigator();
 
@@ -19,7 +19,14 @@ const App = () => {
           }}>
           {props => <Login {...props} />}
         </Stack.Screen>
-        <Stack.Screen name="Register" component={Register} />
+        <Stack.Screen
+          name="Register"
+          component={Register}
+          options={{
+            headerTitle: '회원 가입',
+            headerBackTitle: '로그인',
+          }}
+        />
         <Stack.Screen name="Home" component={Home} />
       </Stack.Navigator>
     </NavigationContainer>
