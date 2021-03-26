@@ -1,40 +1,80 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import {
   View,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  KeyboardAvoidingView,
+  Keyboard,
+  Dimensions,
 } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import BottomSheet from 'reanimated-bottom-sheet';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
-const IPADDR = '172.30.1.28:3000';
+const pheight = Dimensions.get('window').height;
+const IPADDR = '172.30.1.1:3000';
 
-const BSheetcomp = () => {
-  return (
-    <View
-      style={{
-        backgroundColor: '#111',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: 500,
-        width: '100%',
-        zIndex: 1,
-      }}>
-      <Text>hello this is bottom sheet</Text>
-    </View>
-  );
-};
-
-const Register = () => {
+const Register = ({navigation, route}) => {
   const [name, setName] = useState({text: '', status: false, focused: false});
   const [phnum, setPhnum] = useState({text: '', status: false, focused: false});
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState({
+    date: new Date(),
+    status: false,
+    focused: false,
+  });
   const [id, setID] = useState({text: '', status: false, focused: false});
   const [pw, setPw] = useState({text: '', status: false, focused: false});
   const [pwchk, setPwchk] = useState({text: '', status: false, focused: false});
+
+  const BSref = useRef(); // for bottom sheet
+  // bottom sheet component
+  const BSheetcomp = () => {
+    return (
+      <View
+        style={{
+          backgroundColor: '#111111dd',
+          justifyContent: 'flex-start',
+          height: 300,
+          // borderWidth: 1,
+          borderTopLeftRadius: 10,
+          borderTopRightRadius: 10,
+        }}>
+        {/* header */}
+        <View
+          style={{
+            height: 18,
+            borderTopLeftRadius: 10,
+            borderTopRightRadius: 10,
+            position: 'absolute',
+            width: '100%',
+            backgroundColor: '#121212',
+            top: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <View
+            style={{
+              height: 5,
+              width: 40,
+              borderRadius: 10,
+              backgroundColor: '#eee',
+            }}
+          />
+        </View>
+        {/* body */}
+        <DateTimePicker
+          style={{margin: 20}}
+          value={date.date}
+          mode={'date'}
+          display="spinner"
+          textColor="white"
+          onChange={(e, d) => _dateChanged(d)}
+        />
+      </View>
+    );
+  };
 
   ////////////////////////////
   // onChangeText functions //
@@ -73,9 +113,36 @@ const Register = () => {
     }
   };
 
+  const _dateChanged = date => {
+    setDate(prev =>
+      date.getFullYear() <= 2018
+        ? {...prev, date: date, status: true}
+        : {...prev, date: date, status: false},
+    );
+  };
+
   const _idChangeTxt = txt => {
+    setID(prev => ({...prev, text: txt}));
     // 서버에서 중복 검사
-    setID(prev => ({...prev, text: txt, status: true}));
+    const option = {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      body: JSON.stringify({
+        id: txt,
+      }),
+    };
+    fetch(`http://${IPADDR}/register/dupChk`, option)
+      .then(res => res.json())
+      .then(json => {
+        if (json) {
+          setID(prev => ({...prev, status: true}));
+        } else {
+          setID(prev => ({...prev, status: false}));
+        }
+      });
   };
 
   const _pwChangeTxt = txt => {
@@ -89,8 +156,6 @@ const Register = () => {
   };
 
   const _pwchkChangeTxt = txt => {
-    console.log(pw);
-    console.log(txt);
     setPwchk(prev =>
       pw.text == txt
         ? {
@@ -110,268 +175,285 @@ const Register = () => {
   // submit //
   ////////////
   const _submitClick = () => {
-    if (name.status && phnum.status && id.status && pw.status && pwchk.status) {
-      // send datas to server to add user
-      const option = {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json;charset=UTF-8',
-        },
-        body: JSON.stringify({
-          name: name.text,
-          phnum: phnum.text,
-          bdate: date,
-          id: id.text,
-          pw: pw.text,
-        }),
-      };
-      fetch(`http://${IPADDR}/register/add`, option)
-        .then(res => res.json())
-        .then(json => {
-          console.log(json);
-        });
-    } else {
-      alert('입력란을 확인해 주십시오');
-      return;
-    }
+    // send datas to server to add user
+    const option = {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      body: JSON.stringify({
+        name: name.text,
+        phnum: phnum.text,
+        bdate: date.date,
+        id: id.text,
+        pw: pw.text,
+      }),
+    };
+    fetch(`http://${IPADDR}/register/add`, option)
+      .then(res => res.json())
+      .then(json => {
+        // console.log(json.access);
+        if (json.access) navigation.push('Home');
+        else alert('계정 생성 실패!');
+      });
   };
 
   return (
     <View style={styles.main}>
-      <View style={styles.topper}>
-        <Text style={styles.toppertxt}>회원 가입</Text>
-      </View>
-      <View style={styles.body}>
-        <View
-          style={
-            name.focused
-              ? name.status
-                ? {...styles.inputbox, borderColor: '#3eef8f'}
-                : {...styles.inputbox, borderColor: '#ff4a4a'}
-              : styles.inputbox
-          }>
-          <TextInput
-            style={styles.input}
-            placeholder={'Name'}
-            placeholderTextColor="#a1a1a1"
-            textContentType="name"
-            value={name.text}
-            onChangeText={txt => _nameChangeTxt(txt)}
-            onFocus={e => setName(prev => ({...prev, focused: true}))}
-          />
-          {name.focused ? (
-            name.status ? (
-              <MaterialCommunityIcons
-                name="check-circle-outline"
-                size={25}
-                style={{right: 10}}
-                color="#3eef8f"
-              />
-            ) : (
-              <MaterialCommunityIcons
-                name="alert-circle-outline"
-                size={25}
-                style={{right: 10}}
-                color="#ff4a4a"
-              />
-            )
-          ) : null}
+      <KeyboardAwareScrollView scrollEnabled={false}>
+        <View style={styles.topper}>
+          <Text style={styles.toppertxt}>회원 가입</Text>
         </View>
-        <View
-          style={
-            phnum.focused
-              ? phnum.status
-                ? {...styles.inputbox, borderColor: '#3eef8f'}
-                : {...styles.inputbox, borderColor: '#ff4a4a'}
-              : styles.inputbox
-          }>
-          <TextInput
-            style={styles.input}
-            placeholder={'Phone number'}
-            placeholderTextColor="#a1a1a1"
-            textContentType="telephoneNumber"
-            keyboardType="number-pad"
-            maxLength={13}
-            value={phnum.text}
-            onChangeText={txt => _phnumChangeTxt(txt)}
-            onFocus={e => setPhnum(prev => ({...prev, focused: true}))}
-          />
-          {phnum.focused ? (
-            phnum.status ? (
+        <View style={styles.body}>
+          <View
+            style={
+              name.focused
+                ? name.status
+                  ? {...styles.inputbox, borderColor: '#3eef8f'}
+                  : {...styles.inputbox, borderColor: '#ff4a4a'}
+                : styles.inputbox
+            }>
+            <TextInput
+              style={styles.input}
+              placeholder={'Name'}
+              placeholderTextColor="#a1a1a1"
+              textContentType="name"
+              value={name.text}
+              onChangeText={txt => _nameChangeTxt(txt)}
+              onFocus={e => setName(prev => ({...prev, focused: true}))}
+            />
+            {name.focused ? (
+              name.status ? (
+                <MaterialCommunityIcons
+                  name="check-circle-outline"
+                  size={25}
+                  style={{right: 10}}
+                  color="#3eef8f"
+                />
+              ) : (
+                <MaterialCommunityIcons
+                  name="alert-circle-outline"
+                  size={25}
+                  style={{right: 10}}
+                  color="#ff4a4a"
+                />
+              )
+            ) : null}
+          </View>
+          <View
+            style={
+              phnum.focused
+                ? phnum.status
+                  ? {...styles.inputbox, borderColor: '#3eef8f'}
+                  : {...styles.inputbox, borderColor: '#ff4a4a'}
+                : styles.inputbox
+            }>
+            <TextInput
+              style={styles.input}
+              placeholder={'Phone number'}
+              placeholderTextColor="#a1a1a1"
+              textContentType="telephoneNumber"
+              keyboardType="number-pad"
+              maxLength={13}
+              value={phnum.text}
+              onChangeText={txt => _phnumChangeTxt(txt)}
+              onFocus={e => setPhnum(prev => ({...prev, focused: true}))}
+            />
+            {phnum.focused ? (
+              phnum.status ? (
+                <MaterialCommunityIcons
+                  name="check-circle-outline"
+                  size={25}
+                  style={{right: 10}}
+                  color="#3eef8f"
+                />
+              ) : (
+                <MaterialCommunityIcons
+                  name="alert-circle-outline"
+                  size={25}
+                  style={{right: 10}}
+                  color="#ff4a4a"
+                />
+              )
+            ) : null}
+          </View>
+          <View
+            style={
+              date.focused
+                ? date.status
+                  ? {...styles.birthinputv, borderColor: '#3eef8f'}
+                  : {...styles.birthinputv, borderColor: '#ff4a4a'}
+                : styles.birthinputv
+            }>
+            <Text style={styles.dates}>
+              {date.date.getFullYear()}-{date.date.getMonth() + 1}-
+              {date.date.getDate()}
+            </Text>
+            <TouchableOpacity
+              style={styles.datebtn}
+              onPress={() => {
+                setDate(prev => ({...prev, focused: true}));
+                Keyboard.dismiss();
+                BSref.current.snapTo(2);
+              }}>
               <MaterialCommunityIcons
-                name="check-circle-outline"
+                name="calendar-heart"
                 size={25}
-                style={{right: 10}}
-                color="#3eef8f"
+                color={
+                  date.focused ? (date.status ? '#3eef8f' : '#ff4a4a') : 'black'
+                }
               />
-            ) : (
-              <MaterialCommunityIcons
-                name="alert-circle-outline"
-                size={25}
-                style={{right: 10}}
-                color="#ff4a4a"
-              />
-            )
-          ) : null}
+            </TouchableOpacity>
+          </View>
+          <View
+            style={
+              id.focused
+                ? id.status
+                  ? {...styles.inputbox, borderColor: '#3eef8f'}
+                  : {...styles.inputbox, borderColor: '#ff4a4a'}
+                : styles.inputbox
+            }>
+            <TextInput
+              style={styles.input}
+              placeholder={'ID'}
+              placeholderTextColor="#a1a1a1"
+              textContentType="nickname"
+              value={id.text}
+              onChangeText={txt => _idChangeTxt(txt)}
+              onFocus={e => setID(prev => ({...prev, focused: true}))}
+            />
+            {id.focused ? (
+              id.status ? (
+                <MaterialCommunityIcons
+                  name="check-circle-outline"
+                  size={25}
+                  style={{right: 10}}
+                  color="#3eef8f"
+                />
+              ) : (
+                <MaterialCommunityIcons
+                  name="alert-circle-outline"
+                  size={25}
+                  style={{right: 10}}
+                  color="#ff4a4a"
+                />
+              )
+            ) : null}
+          </View>
+          <View
+            style={
+              pw.focused
+                ? pw.status
+                  ? {...styles.inputbox, borderColor: '#3eef8f'}
+                  : {...styles.inputbox, borderColor: '#ff4a4a'}
+                : styles.inputbox
+            }>
+            <TextInput
+              style={styles.input}
+              placeholder={'PW (alpha, num, special char ≧ 8)'}
+              placeholderTextColor="#a1a1a1"
+              textContentType="newPassword"
+              secureTextEntry={true}
+              value={pw.text}
+              onChangeText={txt => _pwChangeTxt(txt)}
+              onFocus={e => setPw(prev => ({...prev, focused: true}))}
+            />
+            {pw.focused ? (
+              pw.status ? (
+                <MaterialCommunityIcons
+                  name="check-circle-outline"
+                  size={25}
+                  style={{right: 10}}
+                  color="#3eef8f"
+                />
+              ) : (
+                <MaterialCommunityIcons
+                  name="alert-circle-outline"
+                  size={25}
+                  style={{right: 10}}
+                  color="#ff4a4a"
+                />
+              )
+            ) : null}
+          </View>
+          <View
+            style={
+              pwchk.focused
+                ? pwchk.status
+                  ? {...styles.inputbox, borderColor: '#3eef8f'}
+                  : {...styles.inputbox, borderColor: '#ff4a4a'}
+                : styles.inputbox
+            }>
+            <TextInput
+              style={styles.input}
+              placeholder={'Check password'}
+              placeholderTextColor="#a1a1a1"
+              textContentType="newPassword"
+              secureTextEntry={true}
+              value={pwchk.text}
+              onChangeText={txt => _pwchkChangeTxt(txt)}
+              onFocus={e => {
+                setPwchk(prev => ({...prev, focused: true}));
+              }}
+            />
+            {pwchk.focused ? (
+              pwchk.status ? (
+                <MaterialCommunityIcons
+                  name="check-circle-outline"
+                  size={25}
+                  style={{right: 10}}
+                  color="#3eef8f"
+                />
+              ) : (
+                <MaterialCommunityIcons
+                  name="alert-circle-outline"
+                  size={25}
+                  style={{right: 10}}
+                  color="#ff4a4a"
+                />
+              )
+            ) : null}
+          </View>
         </View>
-        <View style={styles.birthinputv}>
-          {/* <DateTimePicker
-            style={{width: 500, height: 50}}
-            value={date}
-            mode={'date'}
-            display="default"
-            onChange={(e, d) => {
-              setDate(d);
-            }}
-          /> */}
-          <Text style={styles.dates}>
-            {date.getFullYear()}-{date.getMonth() + 1}-{date.getDate()}
-          </Text>
-          <TouchableOpacity
-            style={styles.datebtn}
-            onPress={() => {
-              console.log('open');
-            }}>
-            <MaterialCommunityIcons name="calendar-heart" size={25} />
-          </TouchableOpacity>
+        <View style={styles.footer}>
+          {name.status &&
+          phnum.status &&
+          date.status &&
+          id.status &&
+          pw.status &&
+          pwchk.status ? (
+            <TouchableOpacity style={styles.submitbtn} onPress={_submitClick}>
+              <Text>회원 가입</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={{...styles.submitbtn, backgroundColor: '#8f8f8f'}}
+              disabled={true}>
+              <Text>회원 가입</Text>
+            </TouchableOpacity>
+          )}
         </View>
-        <View
-          style={
-            id.focused
-              ? id.status
-                ? {...styles.inputbox, borderColor: '#3eef8f'}
-                : {...styles.inputbox, borderColor: '#ff4a4a'}
-              : styles.inputbox
-          }>
-          <TextInput
-            style={styles.input}
-            placeholder={'ID'}
-            placeholderTextColor="#a1a1a1"
-            textContentType="nickname"
-            value={id.text}
-            onChangeText={txt => _idChangeTxt(txt)}
-            onFocus={e => setID(prev => ({...prev, focused: true}))}
-          />
-          {id.focused ? (
-            id.status ? (
-              <MaterialCommunityIcons
-                name="check-circle-outline"
-                size={25}
-                style={{right: 10}}
-                color="#3eef8f"
-              />
-            ) : (
-              <MaterialCommunityIcons
-                name="alert-circle-outline"
-                size={25}
-                style={{right: 10}}
-                color="#ff4a4a"
-              />
-            )
-          ) : null}
-        </View>
-        <View
-          style={
-            pw.focused
-              ? pw.status
-                ? {...styles.inputbox, borderColor: '#3eef8f'}
-                : {...styles.inputbox, borderColor: '#ff4a4a'}
-              : styles.inputbox
-          }>
-          <TextInput
-            style={styles.input}
-            placeholder={'PW (alpha, num, special char ≧ 8)'}
-            placeholderTextColor="#a1a1a1"
-            textContentType="password"
-            secureTextEntry={true}
-            value={pw.text}
-            onChangeText={txt => _pwChangeTxt(txt)}
-            onFocus={e => setPw(prev => ({...prev, focused: true}))}
-          />
-          {pw.focused ? (
-            pw.status ? (
-              <MaterialCommunityIcons
-                name="check-circle-outline"
-                size={25}
-                style={{right: 10}}
-                color="#3eef8f"
-              />
-            ) : (
-              <MaterialCommunityIcons
-                name="alert-circle-outline"
-                size={25}
-                style={{right: 10}}
-                color="#ff4a4a"
-              />
-            )
-          ) : null}
-        </View>
-        <View
-          style={
-            pwchk.focused
-              ? pwchk.status
-                ? {...styles.inputbox, borderColor: '#3eef8f'}
-                : {...styles.inputbox, borderColor: '#ff4a4a'}
-              : styles.inputbox
-          }>
-          <TextInput
-            style={styles.input}
-            placeholder={'Check password'}
-            placeholderTextColor="#a1a1a1"
-            secureTextEntry={true}
-            value={pwchk.text}
-            onChangeText={txt => _pwchkChangeTxt(txt)}
-            onFocus={e => setPwchk(prev => ({...prev, focused: true}))}
-          />
-          {pwchk.focused ? (
-            pwchk.status ? (
-              <MaterialCommunityIcons
-                name="check-circle-outline"
-                size={25}
-                style={{right: 10}}
-                color="#3eef8f"
-              />
-            ) : (
-              <MaterialCommunityIcons
-                name="alert-circle-outline"
-                size={25}
-                style={{right: 10}}
-                color="#ff4a4a"
-              />
-            )
-          ) : null}
-        </View>
-      </View>
-      <View style={styles.footer}>
-        {name.status &&
-        phnum.status &&
-        id.status &&
-        pw.status &&
-        pwchk.status ? (
-          <TouchableOpacity style={styles.submitbtn} onPress={_submitClick}>
-            <Text>회원 가입</Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            style={{...styles.submitbtn, backgroundColor: '#8f8f8f'}}
-            disabled={true}>
-            <Text>회원 가입</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-
+      </KeyboardAwareScrollView>
       {/* date bottom sheet */}
+      <BottomSheet
+        ref={BSref}
+        snapPoints={[0, 0, 350]}
+        borderRadius={10}
+        renderContent={BSheetcomp}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   main: {
-    flex: 1,
+    // flex: 1,
+    height: pheight,
   },
   topper: {
     flex: 1,
+    height: pheight / 8,
     alignItems: 'center',
     justifyContent: 'center',
     // borderWidth: 1,
@@ -381,7 +463,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   body: {
-    flex: 4,
+    // flex: 4,
+    height: (pheight / 8) * 4,
     alignItems: 'center',
     justifyContent: 'space-around',
     // borderWidth: 1,
@@ -393,6 +476,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     borderWidth: 2,
     borderRadius: 10,
+    height: 44,
   },
   input: {
     width: '85%',
@@ -406,7 +490,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '70%',
-    height: 40,
+    height: 44,
     borderWidth: 2,
     borderRadius: 10,
   },
@@ -422,7 +506,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   footer: {
-    flex: 2,
+    // flex: 2,
+    height: (pheight / 8) * 3,
     alignItems: 'center',
     // borderWidth: 1,
   },
