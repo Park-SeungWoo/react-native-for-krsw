@@ -8,6 +8,7 @@ import {
   Keyboard,
   Dimensions,
   TouchableWithoutFeedback,
+  Appearance,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -15,6 +16,8 @@ import BottomSheet from 'reanimated-bottom-sheet';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 const pheight = Dimensions.get('window').height;
+const isDarkmode = Appearance.getColorScheme() == 'dark';
+// const isDarkmode = true;
 const IPADDR = '172.30.1.1:3000';
 
 const Register = ({navigation, route}) => {
@@ -179,7 +182,7 @@ const Register = ({navigation, route}) => {
 
   const _pwchkChangeTxt = txt => {
     setPwchk(prev =>
-      pw.text == txt
+      pw.text == txt && txt != ''
         ? {
             ...prev,
             text: txt,
@@ -464,6 +467,7 @@ const Register = ({navigation, route}) => {
                   placeholderTextColor="#a1a1a1"
                   textContentType="newPassword"
                   secureTextEntry={true}
+                  editable={pw.status} // if password.status is true editable is false
                   value={pwchk.text}
                   onChangeText={txt => _pwchkChangeTxt(txt)}
                   onFocus={e => {
@@ -528,7 +532,6 @@ const Register = ({navigation, route}) => {
 
 const styles = StyleSheet.create({
   main: {
-    // flex: 1,
     height: pheight,
   },
   topper: {
@@ -536,18 +539,18 @@ const styles = StyleSheet.create({
     height: pheight / 8,
     alignItems: 'center',
     justifyContent: 'center',
-    // borderWidth: 1,
+    backgroundColor: isDarkmode ? '#1f1f1f' : '#f1f1f1',
   },
   toppertxt: {
     fontSize: 35,
     fontWeight: 'bold',
+    color: isDarkmode ? '#f1f1f1' : 'black',
   },
   body: {
-    // flex: 4,
     height: (pheight / 8) * 4,
     alignItems: 'center',
     justifyContent: 'space-around',
-    // borderWidth: 1,
+    backgroundColor: isDarkmode ? '#1f1f1f' : '#f1f1f1',
   },
   inputbox: {
     width: '70%',
@@ -557,13 +560,13 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 10,
     height: 44,
+    backgroundColor: '#f1f1f1',
   },
   input: {
     width: '85%',
     height: 40,
     padding: 10,
     borderRadius: 10,
-    backgroundColor: '#f1f1f1',
   },
   idpwinputwrap: {
     width: '70%',
@@ -582,6 +585,7 @@ const styles = StyleSheet.create({
     height: 44,
     borderWidth: 2,
     borderRadius: 10,
+    backgroundColor: '#f1f1f1',
   },
   dates: {
     margin: 10,
@@ -595,14 +599,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   footer: {
-    // flex: 2,
     height: (pheight / 8) * 3,
     alignItems: 'center',
-    // borderWidth: 1,
+    backgroundColor: isDarkmode ? '#1f1f1f' : '#f1f1f1',
   },
   submitbtn: {
     width: '70%',
-    height: 40,
+    height: 50,
     borderWidth: 2,
     borderRadius: 20,
     margin: 10,

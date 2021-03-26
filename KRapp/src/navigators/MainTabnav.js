@@ -2,11 +2,11 @@ import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Home from '../pages/main/Home';
-import Account from '../pages/main/Account';
+import AccountStacknav from '../navigators/AccountStacknav';
 
 const Tab = createBottomTabNavigator();
 
-const MainTabnav = () => {
+const MainTabnav = ({route}) => {
   return (
     <Tab.Navigator
       screenOptions={({route}) => ({
@@ -14,14 +14,18 @@ const MainTabnav = () => {
           let iconName = '';
 
           if (route.name == 'Home') iconName = 'home';
-          else if (route.name == 'Account') iconName = 'person';
+          else if (route.name == 'Accountnav') iconName = 'person';
           else iconName = 'alert';
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
       })}>
       <Tab.Screen name="Home" component={Home} />
-      <Tab.Screen name="Account" component={Account} />
+      <Tab.Screen
+        name="Accountnav"
+        component={AccountStacknav}
+        initialParams={route.params.params}
+      />
     </Tab.Navigator>
   );
 };

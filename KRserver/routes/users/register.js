@@ -3,7 +3,6 @@ const morgan = require('morgan'); // for log
 const router = express.Router();
 const mongoose = require('mongoose');
 const user = require('../../schemas/user');
-// require('../../schemas/user');
 let Users = mongoose.model('user');
 
 router.use(express.json());

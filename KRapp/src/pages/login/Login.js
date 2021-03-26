@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -6,15 +6,16 @@ import {
   TextInput,
   TouchableOpacity,
   KeyboardAvoidingView,
+  Appearance,
 } from 'react-native';
 
 const IPADDR = '172.30.1.1:3000';
+const isDarkmode = Appearance.getColorScheme() == 'dark';
+// const isDarkmode = false;
 
 const Login = ({navigation, route}) => {
   const [id, setId] = useState('');
   const [pw, setPw] = useState('');
-  let idref = useRef();
-  let pwref = useRef();
 
   const _gotoRegister = () => {
     navigation.push('Register');
@@ -59,7 +60,6 @@ const Login = ({navigation, route}) => {
         <Text style={styles.logintxt}>Log in</Text>
         <KeyboardAvoidingView style={styles.inputs}>
           <TextInput
-            ref={ref => (idref = ref)}
             style={styles.input}
             placeholder={'ID'}
             placeholderTextColor="#a1a1a1"
@@ -70,7 +70,6 @@ const Login = ({navigation, route}) => {
             }}
           />
           <TextInput
-            ref={ref => (pwref = ref)}
             style={styles.input}
             placeholder={'Password'}
             placeholderTextColor="#a1a1a1"
@@ -109,7 +108,7 @@ const styles = StyleSheet.create({
   },
   topper: {
     flex: 1,
-    backgroundColor: '#afaffa',
+    backgroundColor: isDarkmode ? '#1f1f1f' : '#f1f1f1',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 10,
@@ -118,13 +117,14 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'space-around',
-    // backgroundColor: '#faafaf',
+    backgroundColor: isDarkmode ? '#1f1f1f' : '#f1f1f1',
     padding: 10,
   },
   logintxt: {
     fontSize: 38,
     fontWeight: 'bold',
     marginBottom: 20,
+    color: isDarkmode ? '#f1f1f1' : 'black',
   },
   inputs: {
     width: '100%',
@@ -150,10 +150,11 @@ const styles = StyleSheet.create({
   register: {
     fontSize: 15,
     fontWeight: '500',
+    color: isDarkmode ? '#f1f1f1' : 'black',
   },
   footer: {
     flex: 1,
-    // backgroundColor: '#affaaf',
+    backgroundColor: isDarkmode ? '#1f1f1f' : '#f1f1f1',
     alignItems: 'center',
     padding: 10,
   },
