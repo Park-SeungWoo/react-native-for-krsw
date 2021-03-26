@@ -8,8 +8,8 @@ import {
   KeyboardAvoidingView,
   Appearance,
 } from 'react-native';
+import {IPADDR} from '../../../env.json';
 
-const IPADDR = '172.30.1.1:3000';
 const isDarkmode = Appearance.getColorScheme() == 'dark';
 // const isDarkmode = false;
 
@@ -19,6 +19,10 @@ const Login = ({navigation, route}) => {
 
   const _gotoRegister = () => {
     navigation.push('Register');
+  };
+
+  const _gotoFindid = () => {
+    navigation.push('Finduserid');
   };
 
   const _clickSubmit = () => {
@@ -88,7 +92,9 @@ const Login = ({navigation, route}) => {
             </Text>
           </TouchableOpacity>
           <TouchableOpacity>
-            <Text style={styles.register}>ID/PW 찾기</Text>
+            <Text style={styles.register} onPress={_gotoFindid}>
+              ID/PW 찾기
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

@@ -10,6 +10,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import MainTabnav from './src/navigators/MainTabnav';
 import Login from './src/pages/login/Login';
 import Register from './src/pages/login/Register';
+import Finduserid from './src/pages/login/Finduserid';
 
 const Stack = createStackNavigator();
 
@@ -22,11 +23,19 @@ const App = () => {
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen
           name="Login"
+          component={Login}
           options={{
             headerShown: false,
-          }}>
-          {props => <Login {...props} />}
-        </Stack.Screen>
+          }}
+        />
+        <Stack.Screen
+          name="Finduserid"
+          component={Finduserid}
+          options={{
+            headerTitle: 'ID 찾기',
+            headerBackTitle: '로그인',
+          }}
+        />
         <Stack.Screen
           name="Register"
           component={Register}

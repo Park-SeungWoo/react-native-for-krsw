@@ -14,11 +14,11 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import DateTimePicker from '@react-native-community/datetimepicker';
 import BottomSheet from 'reanimated-bottom-sheet';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {IPADDR} from '../../../env.json';
 
 const pheight = Dimensions.get('window').height;
 const isDarkmode = Appearance.getColorScheme() == 'dark';
 // const isDarkmode = true;
-const IPADDR = '172.30.1.1:3000';
 
 const Register = ({navigation, route}) => {
   const [name, setName] = useState({text: '', status: false, focused: false});
