@@ -22,7 +22,9 @@ const Login = ({navigation, route}) => {
   };
 
   const _gotoFindid = () => {
-    navigation.push('Finduserid');
+    navigation.push('FindTabnav', {
+      screen: 'ID',
+    });
   };
 
   const _clickSubmit = () => {

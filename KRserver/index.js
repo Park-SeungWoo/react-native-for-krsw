@@ -21,11 +21,13 @@ mongoose.connect(
 );
 
 // router
-const login = require('./routes/users/login');
-const register = require('./routes/users/register');
+const login = require('./routes/account/login');
+const register = require('./routes/account/register');
+const find = require('./routes/account/find');
 
 app.use('/login', login);
 app.use('/register', register);
+app.use('/find', find);
 
 // listen
 app.listen(process.env.PORT || 3000, process.env.HOST, () => {

@@ -10,7 +10,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import MainTabnav from './src/navigators/MainTabnav';
 import Login from './src/pages/login/Login';
 import Register from './src/pages/login/Register';
-import Finduserid from './src/pages/login/Finduserid';
+import FindTabnav from './src/navigators/FindTabnav';
 
 const Stack = createStackNavigator();
 
@@ -29,10 +29,10 @@ const App = () => {
           }}
         />
         <Stack.Screen
-          name="Finduserid"
-          component={Finduserid}
+          name="FindTabnav"
+          component={FindTabnav}
           options={{
-            headerTitle: 'ID 찾기',
+            headerTitle: 'ID/PW 찾기',
             headerBackTitle: '로그인',
           }}
         />

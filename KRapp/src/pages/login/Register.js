@@ -28,6 +28,12 @@ const Register = ({navigation, route}) => {
     status: false,
     focused: false,
   });
+  const [email, setEmail] = useState({
+    test: '',
+    status: false,
+    focused: false,
+    errmes: '비밀번호 찾기에 사용됩니다.\n사용가능한 메일 주소를 적어주세요.',
+  });
   const [id, setID] = useState({
     text: '',
     status: false,
@@ -140,6 +146,28 @@ const Register = ({navigation, route}) => {
     );
   };
 
+  const _emailChangeTxt = txt => {
+    var reg = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
+    setEmail(prev =>
+      txt.length != 0
+        ? reg.test(txt)
+          ? {...prev, text: txt, status: true}
+          : {
+              ...prev,
+              text: txt,
+              status: false,
+              errmes: '올바른 이메일 형식을 사용해 주세요.',
+            }
+        : {
+            ...prev,
+            text: txt,
+            status: false,
+            errmes:
+              '비밀번호 찾기에 사용됩니다.\n사용가능한 메일 주소를 적어주세요.',
+          },
+    );
+  };
+
   const _idChangeTxt = txt => {
     setID(prev => ({...prev, text: txt}));
     // 서버에서 중복 검사
@@ -213,6 +241,7 @@ const Register = ({navigation, route}) => {
         name: name.text,
         phnum: phnum.text,
         bdate: date.date,
+        email: email.text,
         id: id.text,
         pw: pw.text,
       }),
@@ -220,7 +249,6 @@ const Register = ({navigation, route}) => {
     fetch(`http://${IPADDR}/register/add`, option)
       .then(res => res.json())
       .then(json => {
-        // console.log(json.access);
         if (json.access) {
           alert('계정 생성 성공!');
           navigation.goBack();
@@ -342,6 +370,57 @@ const Register = ({navigation, route}) => {
                   }
                 />
               </TouchableOpacity>
+            </View>
+            <View style={styles.idpwinputwrap}>
+              <View
+                style={
+                  email.focused
+                    ? email.status
+                      ? {
+                          ...styles.inputbox,
+                          borderColor: '#3eef8f',
+                          width: '100%',
+                        }
+                      : {
+                          ...styles.inputbox,
+                          borderColor: '#ff4a4a',
+                          width: '100%',
+                        }
+                    : {...styles.inputbox, width: '100%'}
+                }>
+                <TextInput
+                  style={styles.input}
+                  placeholder={'E-mail'}
+                  placeholderTextColor="#a1a1a1"
+                  textContentType="emailAddress"
+                  value={email.text}
+                  onChangeText={txt => _emailChangeTxt(txt)}
+                  onFocus={e => setEmail(prev => ({...prev, focused: true}))}
+                  keyboardType="email-address"
+                />
+                {email.focused ? (
+                  email.status ? (
+                    <MaterialCommunityIcons
+                      name="check-circle-outline"
+                      size={25}
+                      style={{right: 10}}
+                      color="#3eef8f"
+                    />
+                  ) : (
+                    <MaterialCommunityIcons
+                      name="alert-circle-outline"
+                      size={25}
+                      style={{right: 10}}
+                      color="#ff4a4a"
+                    />
+                  )
+                ) : null}
+              </View>
+              {email.focused ? (
+                email.status ? null : (
+                  <Text style={styles.idpwstatustxt}>{email.errmes}</Text>
+                )
+              ) : null}
             </View>
             <View style={styles.idpwinputwrap}>
               <View
@@ -504,6 +583,7 @@ const Register = ({navigation, route}) => {
           {name.status &&
           phnum.status &&
           date.status &&
+          email.status &&
           id.status &&
           pw.status &&
           pwchk.status ? (

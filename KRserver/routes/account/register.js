@@ -16,6 +16,7 @@ router.post('/add', (req, res, next) => {
     name: userinfo.name,
     phonenum: userinfo.phnum,
     birthday: new Date(),
+    email: userinfo.email,
     id: userinfo.id,
     password: userinfo.pw,
   });

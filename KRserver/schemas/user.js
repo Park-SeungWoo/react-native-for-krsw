@@ -14,6 +14,10 @@ const userSchema = new Schema({
     type: Date,
     require: true,
   },
+  email: {
+    type: String,
+    require: true,
+  },
   id: {
     type: String,
     require: true,

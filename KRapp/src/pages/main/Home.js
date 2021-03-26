@@ -6,10 +6,11 @@ const Home = ({navigation, route}) => {
   let color = 1;
   const [bcolor, setBcolor] = useState(colors[color]);
   const {userdata} = route.params;
+  let interval;
 
   useEffect(() => {
     alert(JSON.stringify(userdata));
-    setInterval(() => {
+    interval = setInterval(() => {
       if (color < 3) {
         color += 1;
       } else {
@@ -18,6 +19,10 @@ const Home = ({navigation, route}) => {
       setBcolor(colors[color]);
     }, 2000);
   }, []);
+
+  useEffect(() => {
+    return clearInterval(interval);
+  });
 
   const heart = 'Welcome to learning RN!';
   const [tog, setTog] = useState(false);
