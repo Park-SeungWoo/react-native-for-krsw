@@ -5,8 +5,10 @@ const Home = ({navigation, route}) => {
   const colors = ['#faafaf', '#afaffa', '#affaaf', '#fafaaf'];
   let color = 1;
   const [bcolor, setBcolor] = useState(colors[color]);
+  const {userdata} = route.params;
 
   useEffect(() => {
+    alert(JSON.stringify(userdata));
     setInterval(() => {
       if (color < 3) {
         color += 1;

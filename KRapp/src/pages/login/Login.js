@@ -36,7 +36,17 @@ const Login = ({navigation, route}) => {
     fetch(`http://${IPADDR}/login/validate`, option)
       .then(res => res.json())
       .then(json => {
-        alert(json);
+        if (json.login)
+          navigation.navigate('Main', {
+            screen: 'Home',
+            params: {
+              userdata: json.userdata,
+            },
+          });
+        else {
+          if (json.iderr) alert('존재하지 않는 아이디입니다.');
+          else alert('비밀번호를 다시 한번 확인해주세요.');
+        }
       });
   };
 

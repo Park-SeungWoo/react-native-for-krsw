@@ -2,9 +2,9 @@ import 'react-native-gesture-handler';
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import Home from './src/pages/Home';
-import Login from './src/pages/userinfos/Login';
-import Register from './src/pages/userinfos/Register';
+import MainTabnav from './src/navigators/MainTabnav';
+import Login from './src/pages/login/Login';
+import Register from './src/pages/login/Register';
 
 const Stack = createStackNavigator();
 
@@ -27,7 +27,13 @@ const App = () => {
             headerBackTitle: '로그인',
           }}
         />
-        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen
+          name="Main"
+          component={MainTabnav}
+          options={{
+            headerShown: false,
+          }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
