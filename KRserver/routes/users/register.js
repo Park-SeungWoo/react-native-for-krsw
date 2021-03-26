@@ -1,24 +1,10 @@
 const express = require('express');
 const morgan = require('morgan'); // for log
-const mongoose = require('mongoose');
 const router = express.Router();
-require('../../schemas/user');
+const mongoose = require('mongoose');
+const user = require('../../schemas/user');
+// require('../../schemas/user');
 let Users = mongoose.model('user');
-
-mongoose.connect(
-  process.env.DBADDR,
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  },
-  err => {
-    if (err) {
-      console.log('Mongodb connection failed : ', err);
-    } else {
-      console.log('Successfully connected to Mongodb!!');
-    }
-  },
-);
 
 router.use(express.json());
 router.use(morgan('dev'));
@@ -45,13 +31,22 @@ router.post('/add', (req, res, next) => {
 });
 
 router.post('/dupChk', (req, res, next) => {
-  const id = req.body;
+  const data = req.body;
 
-  // db 연결 후 중복 검사로 바꾸기
-  if (id.id.length >= 8) {
-    res.send(true);
+  if (data.id.length >= 8) {
+    user.find({id: data.id}, (err, user) => {
+      if (user.length != 0) {
+        // dupicated id
+        res.json({access: false, err: 'id가 중복되었습니다.'});
+      } else {
+        // unique id
+        res.json({access: true});
+      }
+    });
+  } else if (data.id.length == 0) {
+    res.json({access: false, err: 'id를 입력해주세요.'});
   } else {
-    res.send(false);
+    res.json({access: false, err: 'id는 8자 이상 설정 가능합니다.'});
   }
 });
 

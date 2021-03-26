@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Keyboard,
   Dimensions,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -24,9 +25,24 @@ const Register = ({navigation, route}) => {
     status: false,
     focused: false,
   });
-  const [id, setID] = useState({text: '', status: false, focused: false});
-  const [pw, setPw] = useState({text: '', status: false, focused: false});
-  const [pwchk, setPwchk] = useState({text: '', status: false, focused: false});
+  const [id, setID] = useState({
+    text: '',
+    status: false,
+    focused: false,
+    errmes: 'id를 입력해주세요',
+  });
+  const [pw, setPw] = useState({
+    text: '',
+    status: false,
+    focused: false,
+    errmes: '8자 이상 알파벳 대/소문자, 숫자, 특수문자를 포함하여 설정해주세요',
+  });
+  const [pwchk, setPwchk] = useState({
+    text: '',
+    status: false,
+    focused: false,
+    errmes: '비밀번호가 일치하지 않습니다.',
+  });
 
   const BSref = useRef(); // for bottom sheet
   // bottom sheet component
@@ -115,7 +131,7 @@ const Register = ({navigation, route}) => {
 
   const _dateChanged = date => {
     setDate(prev =>
-      date.getFullYear() <= 2018
+      date.getFullYear() <= 2020
         ? {...prev, date: date, status: true}
         : {...prev, date: date, status: false},
     );
@@ -137,10 +153,10 @@ const Register = ({navigation, route}) => {
     fetch(`http://${IPADDR}/register/dupChk`, option)
       .then(res => res.json())
       .then(json => {
-        if (json) {
+        if (json.access) {
           setID(prev => ({...prev, status: true}));
         } else {
-          setID(prev => ({...prev, status: false}));
+          setID(prev => ({...prev, status: false, errmes: json.err}));
         }
       });
   };
@@ -150,8 +166,14 @@ const Register = ({navigation, route}) => {
     reg = /^((?=.*?[A-Z])|(?=.*?[a-z]))(?=.*?[0-9])(?=.*?[#?!@$%^&*-.]).{8,}$/;
     setPw(prev =>
       reg.test(txt)
-        ? {...prev, text: txt, status: true}
-        : {...prev, text: txt, status: false},
+        ? {...prev, text: txt, status: true, errmes: ''}
+        : {
+            ...prev,
+            text: txt,
+            status: false,
+            errmes:
+              '8자 이상 알파벳 대/소문자, 숫자, 특수문자를 포함하여 설정해주세요',
+          },
     );
   };
 
@@ -162,11 +184,13 @@ const Register = ({navigation, route}) => {
             ...prev,
             text: txt,
             status: true,
+            errmes: '',
           }
         : {
             ...prev,
             text: txt,
             status: false,
+            errmes: '비밀번호가 일치하지 않습니다.',
           },
     );
   };
@@ -194,228 +218,284 @@ const Register = ({navigation, route}) => {
       .then(res => res.json())
       .then(json => {
         // console.log(json.access);
-        if (json.access) navigation.push('Home');
-        else alert('계정 생성 실패!');
+        if (json.access) {
+          alert('계정 생성 성공!');
+          navigation.goBack();
+        } else alert('계정 생성 실패!');
       });
   };
 
   return (
     <View style={styles.main}>
-      <KeyboardAwareScrollView scrollEnabled={false}>
+      <KeyboardAwareScrollView scrollEnabled={false} extraScrollHeight={45}>
         <View style={styles.topper}>
           <Text style={styles.toppertxt}>회원 가입</Text>
         </View>
-        <View style={styles.body}>
-          <View
-            style={
-              name.focused
-                ? name.status
-                  ? {...styles.inputbox, borderColor: '#3eef8f'}
-                  : {...styles.inputbox, borderColor: '#ff4a4a'}
-                : styles.inputbox
-            }>
-            <TextInput
-              style={styles.input}
-              placeholder={'Name'}
-              placeholderTextColor="#a1a1a1"
-              textContentType="name"
-              value={name.text}
-              onChangeText={txt => _nameChangeTxt(txt)}
-              onFocus={e => setName(prev => ({...prev, focused: true}))}
-            />
-            {name.focused ? (
-              name.status ? (
-                <MaterialCommunityIcons
-                  name="check-circle-outline"
-                  size={25}
-                  style={{right: 10}}
-                  color="#3eef8f"
-                />
-              ) : (
-                <MaterialCommunityIcons
-                  name="alert-circle-outline"
-                  size={25}
-                  style={{right: 10}}
-                  color="#ff4a4a"
-                />
-              )
-            ) : null}
-          </View>
-          <View
-            style={
-              phnum.focused
-                ? phnum.status
-                  ? {...styles.inputbox, borderColor: '#3eef8f'}
-                  : {...styles.inputbox, borderColor: '#ff4a4a'}
-                : styles.inputbox
-            }>
-            <TextInput
-              style={styles.input}
-              placeholder={'Phone number'}
-              placeholderTextColor="#a1a1a1"
-              textContentType="telephoneNumber"
-              keyboardType="number-pad"
-              maxLength={13}
-              value={phnum.text}
-              onChangeText={txt => _phnumChangeTxt(txt)}
-              onFocus={e => setPhnum(prev => ({...prev, focused: true}))}
-            />
-            {phnum.focused ? (
-              phnum.status ? (
-                <MaterialCommunityIcons
-                  name="check-circle-outline"
-                  size={25}
-                  style={{right: 10}}
-                  color="#3eef8f"
-                />
-              ) : (
-                <MaterialCommunityIcons
-                  name="alert-circle-outline"
-                  size={25}
-                  style={{right: 10}}
-                  color="#ff4a4a"
-                />
-              )
-            ) : null}
-          </View>
-          <View
-            style={
-              date.focused
-                ? date.status
-                  ? {...styles.birthinputv, borderColor: '#3eef8f'}
-                  : {...styles.birthinputv, borderColor: '#ff4a4a'}
-                : styles.birthinputv
-            }>
-            <Text style={styles.dates}>
-              {date.date.getFullYear()}-{date.date.getMonth() + 1}-
-              {date.date.getDate()}
-            </Text>
-            <TouchableOpacity
-              style={styles.datebtn}
-              onPress={() => {
-                setDate(prev => ({...prev, focused: true}));
-                Keyboard.dismiss();
-                BSref.current.snapTo(2);
-              }}>
-              <MaterialCommunityIcons
-                name="calendar-heart"
-                size={25}
-                color={
-                  date.focused ? (date.status ? '#3eef8f' : '#ff4a4a') : 'black'
-                }
+        <TouchableWithoutFeedback
+          onPress={() => {
+            BSref.current.snapTo(0);
+          }}>
+          <View style={styles.body}>
+            <View
+              style={
+                name.focused
+                  ? name.status
+                    ? {...styles.inputbox, borderColor: '#3eef8f'}
+                    : {...styles.inputbox, borderColor: '#ff4a4a'}
+                  : styles.inputbox
+              }>
+              <TextInput
+                style={styles.input}
+                placeholder={'Name'}
+                placeholderTextColor="#a1a1a1"
+                textContentType="name"
+                value={name.text}
+                onChangeText={txt => _nameChangeTxt(txt)}
+                onFocus={e => setName(prev => ({...prev, focused: true}))}
               />
-            </TouchableOpacity>
+              {name.focused ? (
+                name.status ? (
+                  <MaterialCommunityIcons
+                    name="check-circle-outline"
+                    size={25}
+                    style={{right: 10}}
+                    color="#3eef8f"
+                  />
+                ) : (
+                  <MaterialCommunityIcons
+                    name="alert-circle-outline"
+                    size={25}
+                    style={{right: 10}}
+                    color="#ff4a4a"
+                  />
+                )
+              ) : null}
+            </View>
+            <View
+              style={
+                phnum.focused
+                  ? phnum.status
+                    ? {...styles.inputbox, borderColor: '#3eef8f'}
+                    : {...styles.inputbox, borderColor: '#ff4a4a'}
+                  : styles.inputbox
+              }>
+              <TextInput
+                style={styles.input}
+                placeholder={'Phone number'}
+                placeholderTextColor="#a1a1a1"
+                textContentType="telephoneNumber"
+                keyboardType="number-pad"
+                maxLength={13}
+                value={phnum.text}
+                onChangeText={txt => _phnumChangeTxt(txt)}
+                onFocus={e => setPhnum(prev => ({...prev, focused: true}))}
+              />
+              {phnum.focused ? (
+                phnum.status ? (
+                  <MaterialCommunityIcons
+                    name="check-circle-outline"
+                    size={25}
+                    style={{right: 10}}
+                    color="#3eef8f"
+                  />
+                ) : (
+                  <MaterialCommunityIcons
+                    name="alert-circle-outline"
+                    size={25}
+                    style={{right: 10}}
+                    color="#ff4a4a"
+                  />
+                )
+              ) : null}
+            </View>
+            <View
+              style={
+                date.focused
+                  ? date.status
+                    ? {...styles.birthinputv, borderColor: '#3eef8f'}
+                    : {...styles.birthinputv, borderColor: '#ff4a4a'}
+                  : styles.birthinputv
+              }>
+              <Text style={styles.dates}>
+                {date.date.getFullYear()}-{date.date.getMonth() + 1}-
+                {date.date.getDate()}
+              </Text>
+              <TouchableOpacity
+                style={styles.datebtn}
+                onPress={() => {
+                  setDate(prev => ({...prev, focused: true}));
+                  Keyboard.dismiss();
+                  BSref.current.snapTo(2);
+                }}>
+                <MaterialCommunityIcons
+                  name="calendar-heart"
+                  size={25}
+                  color={
+                    date.focused
+                      ? date.status
+                        ? '#3eef8f'
+                        : '#ff4a4a'
+                      : 'black'
+                  }
+                />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.idpwinputwrap}>
+              <View
+                style={
+                  id.focused
+                    ? id.status
+                      ? {
+                          ...styles.inputbox,
+                          borderColor: '#3eef8f',
+                          width: '100%',
+                        }
+                      : {
+                          ...styles.inputbox,
+                          borderColor: '#ff4a4a',
+                          width: '100%',
+                        }
+                    : {...styles.inputbox, width: '100%'}
+                }>
+                <TextInput
+                  style={styles.input}
+                  placeholder={'ID'}
+                  placeholderTextColor="#a1a1a1"
+                  textContentType="nickname"
+                  value={id.text}
+                  onChangeText={txt => _idChangeTxt(txt)}
+                  onFocus={e => setID(prev => ({...prev, focused: true}))}
+                />
+                {id.focused ? (
+                  id.status ? (
+                    <MaterialCommunityIcons
+                      name="check-circle-outline"
+                      size={25}
+                      style={{right: 10}}
+                      color="#3eef8f"
+                    />
+                  ) : (
+                    <MaterialCommunityIcons
+                      name="alert-circle-outline"
+                      size={25}
+                      style={{right: 10}}
+                      color="#ff4a4a"
+                    />
+                  )
+                ) : null}
+              </View>
+              {id.focused ? (
+                id.status ? null : (
+                  <Text style={styles.idpwstatustxt}>{id.errmes}</Text>
+                )
+              ) : null}
+            </View>
+            <View style={styles.idpwinputwrap}>
+              <View
+                style={
+                  pw.focused
+                    ? pw.status
+                      ? {
+                          ...styles.inputbox,
+                          borderColor: '#3eef8f',
+                          width: '100%',
+                        }
+                      : {
+                          ...styles.inputbox,
+                          borderColor: '#ff4a4a',
+                          width: '100%',
+                        }
+                    : {...styles.inputbox, width: '100%'}
+                }>
+                <TextInput
+                  style={styles.input}
+                  placeholder={'Password'}
+                  placeholderTextColor="#a1a1a1"
+                  textContentType="newPassword"
+                  secureTextEntry={true}
+                  value={pw.text}
+                  onChangeText={txt => _pwChangeTxt(txt)}
+                  onFocus={e => setPw(prev => ({...prev, focused: true}))}
+                />
+                {pw.focused ? (
+                  pw.status ? (
+                    <MaterialCommunityIcons
+                      name="check-circle-outline"
+                      size={25}
+                      style={{right: 10}}
+                      color="#3eef8f"
+                    />
+                  ) : (
+                    <MaterialCommunityIcons
+                      name="alert-circle-outline"
+                      size={25}
+                      style={{right: 10}}
+                      color="#ff4a4a"
+                    />
+                  )
+                ) : null}
+              </View>
+              {pw.focused ? (
+                pw.status ? null : (
+                  <Text style={styles.idpwstatustxt}>{pw.errmes}</Text>
+                )
+              ) : null}
+            </View>
+            <View style={styles.idpwinputwrap}>
+              <View
+                style={
+                  pwchk.focused
+                    ? pwchk.status
+                      ? {
+                          ...styles.inputbox,
+                          borderColor: '#3eef8f',
+                          width: '100%',
+                        }
+                      : {
+                          ...styles.inputbox,
+                          borderColor: '#ff4a4a',
+                          width: '100%',
+                        }
+                    : {...styles.inputbox, width: '100%'}
+                }>
+                <TextInput
+                  style={styles.input}
+                  placeholder={'Check password'}
+                  placeholderTextColor="#a1a1a1"
+                  textContentType="newPassword"
+                  secureTextEntry={true}
+                  value={pwchk.text}
+                  onChangeText={txt => _pwchkChangeTxt(txt)}
+                  onFocus={e => {
+                    setPwchk(prev => ({...prev, focused: true}));
+                  }}
+                />
+                {pwchk.focused ? (
+                  pwchk.status ? (
+                    <MaterialCommunityIcons
+                      name="check-circle-outline"
+                      size={25}
+                      style={{right: 10}}
+                      color="#3eef8f"
+                    />
+                  ) : (
+                    <MaterialCommunityIcons
+                      name="alert-circle-outline"
+                      size={25}
+                      style={{right: 10}}
+                      color="#ff4a4a"
+                    />
+                  )
+                ) : null}
+              </View>
+              {pwchk.focused ? (
+                pwchk.status ? null : (
+                  <Text style={styles.idpwstatustxt}>{pwchk.errmes}</Text>
+                )
+              ) : null}
+            </View>
           </View>
-          <View
-            style={
-              id.focused
-                ? id.status
-                  ? {...styles.inputbox, borderColor: '#3eef8f'}
-                  : {...styles.inputbox, borderColor: '#ff4a4a'}
-                : styles.inputbox
-            }>
-            <TextInput
-              style={styles.input}
-              placeholder={'ID'}
-              placeholderTextColor="#a1a1a1"
-              textContentType="nickname"
-              value={id.text}
-              onChangeText={txt => _idChangeTxt(txt)}
-              onFocus={e => setID(prev => ({...prev, focused: true}))}
-            />
-            {id.focused ? (
-              id.status ? (
-                <MaterialCommunityIcons
-                  name="check-circle-outline"
-                  size={25}
-                  style={{right: 10}}
-                  color="#3eef8f"
-                />
-              ) : (
-                <MaterialCommunityIcons
-                  name="alert-circle-outline"
-                  size={25}
-                  style={{right: 10}}
-                  color="#ff4a4a"
-                />
-              )
-            ) : null}
-          </View>
-          <View
-            style={
-              pw.focused
-                ? pw.status
-                  ? {...styles.inputbox, borderColor: '#3eef8f'}
-                  : {...styles.inputbox, borderColor: '#ff4a4a'}
-                : styles.inputbox
-            }>
-            <TextInput
-              style={styles.input}
-              placeholder={'PW (alpha, num, special char ≧ 8)'}
-              placeholderTextColor="#a1a1a1"
-              textContentType="newPassword"
-              secureTextEntry={true}
-              value={pw.text}
-              onChangeText={txt => _pwChangeTxt(txt)}
-              onFocus={e => setPw(prev => ({...prev, focused: true}))}
-            />
-            {pw.focused ? (
-              pw.status ? (
-                <MaterialCommunityIcons
-                  name="check-circle-outline"
-                  size={25}
-                  style={{right: 10}}
-                  color="#3eef8f"
-                />
-              ) : (
-                <MaterialCommunityIcons
-                  name="alert-circle-outline"
-                  size={25}
-                  style={{right: 10}}
-                  color="#ff4a4a"
-                />
-              )
-            ) : null}
-          </View>
-          <View
-            style={
-              pwchk.focused
-                ? pwchk.status
-                  ? {...styles.inputbox, borderColor: '#3eef8f'}
-                  : {...styles.inputbox, borderColor: '#ff4a4a'}
-                : styles.inputbox
-            }>
-            <TextInput
-              style={styles.input}
-              placeholder={'Check password'}
-              placeholderTextColor="#a1a1a1"
-              textContentType="newPassword"
-              secureTextEntry={true}
-              value={pwchk.text}
-              onChangeText={txt => _pwchkChangeTxt(txt)}
-              onFocus={e => {
-                setPwchk(prev => ({...prev, focused: true}));
-              }}
-            />
-            {pwchk.focused ? (
-              pwchk.status ? (
-                <MaterialCommunityIcons
-                  name="check-circle-outline"
-                  size={25}
-                  style={{right: 10}}
-                  color="#3eef8f"
-                />
-              ) : (
-                <MaterialCommunityIcons
-                  name="alert-circle-outline"
-                  size={25}
-                  style={{right: 10}}
-                  color="#ff4a4a"
-                />
-              )
-            ) : null}
-          </View>
-        </View>
+        </TouchableWithoutFeedback>
         <View style={styles.footer}>
           {name.status &&
           phnum.status &&
@@ -484,6 +564,15 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     backgroundColor: '#f1f1f1',
+  },
+  idpwinputwrap: {
+    width: '70%',
+  },
+  idpwstatustxt: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#ff4a4a',
+    marginHorizontal: 12,
   },
   birthinputv: {
     flexDirection: 'row',

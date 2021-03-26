@@ -1,6 +1,24 @@
 const express = require('express');
 require('dotenv').config();
+const mongoose = require('mongoose');
 const app = express();
+
+// connect to mongodb server
+mongoose.connect(
+  process.env.DBADDR,
+  {
+    dbName: 'KRapp_db',
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
+  err => {
+    if (err) {
+      console.log('Mongodb connection failed : ', err);
+    } else {
+      console.log('Successfully connected to Mongodb!!');
+    }
+  },
+);
 
 // router
 const login = require('./routes/users/login');

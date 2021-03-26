@@ -8,6 +8,8 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 
+const IPADDR = '172.30.1.1:3000';
+
 const Login = ({navigation, route}) => {
   const [id, setId] = useState('');
   const [pw, setPw] = useState('');
@@ -19,8 +21,23 @@ const Login = ({navigation, route}) => {
   };
 
   const _clickSubmit = () => {
-    idref.clear();
-    pwref.clear();
+    // login
+    const option = {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      body: JSON.stringify({
+        id: id,
+        pw: pw,
+      }),
+    };
+    fetch(`http://${IPADDR}/login/validate`, option)
+      .then(res => res.json())
+      .then(json => {
+        alert(json);
+      });
   };
 
   return (
