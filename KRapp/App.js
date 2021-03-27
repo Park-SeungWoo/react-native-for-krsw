@@ -9,7 +9,7 @@ import {
 import {createStackNavigator} from '@react-navigation/stack';
 import MainTabnav from './src/navigators/MainTabnav';
 import Login from './src/pages/login/Login';
-import Register from './src/pages/login/Register';
+import Register from './src/pages/login/account/Register';
 import FindTabnav from './src/navigators/FindTabnav';
 
 const Stack = createStackNavigator();

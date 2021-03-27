@@ -14,7 +14,7 @@ const isDarkmode = Appearance.getColorScheme() == 'dark';
 
 const Finduserpw = ({navigation, route}) => {
   const [email, setEmail] = useState({
-    test: '',
+    text: '',
     status: false,
     focused: false,
     errmes: '메일로 인증코드가 발송됩니다.\n사용가능한 메일 주소를 적어주세요.',
@@ -83,15 +83,8 @@ const Finduserpw = ({navigation, route}) => {
     const option = {
       method: 'GET',
     };
-    fetch(`http://${IPADDR}/find/getcode?email=${email.text}`, option)
-      .then(res => res.json())
-      .then(json => {
-        if (json.access) {
-          // 메일 전송 성공, 카운트 걸고 코드 입력 받기
-        } else {
-          // 메일 전송 실패
-        }
-      });
+    fetch(`http://${IPADDR}/find/getcode?email=${email.text}`, option);
+    navigation.push('PwCode', {email: email.text});
   };
 
   return (
@@ -179,7 +172,7 @@ const Finduserpw = ({navigation, route}) => {
         ) : null}
         {id.status && email.status ? (
           <TouchableOpacity style={styles.submitbtn} onPress={_submitClick}>
-            <Text>회원 가입</Text>
+            <Text>인증 코드 받기</Text>
           </TouchableOpacity>
         ) : null}
       </View>

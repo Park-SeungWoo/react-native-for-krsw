@@ -2,7 +2,7 @@ import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Finduserid from '../pages/login/Finduserid';
-import Finduserpw from '../pages/login/Finduserpw';
+import FindPwStacknav from './FindPwStacknav';
 
 const Tab = createBottomTabNavigator();
 
@@ -14,7 +14,7 @@ const FindTabnav = () => {
           let iconName = '';
 
           if (route.name == 'ID') iconName = 'lock-closed';
-          else if (route.name == 'PW') iconName = 'key';
+          else if (route.name == 'PWstack') iconName = 'key';
           else iconName = 'alert';
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -28,8 +28,8 @@ const FindTabnav = () => {
         }}
       />
       <Tab.Screen
-        name="PW"
-        component={Finduserpw}
+        name="PWstack"
+        component={FindPwStacknav}
         options={{
           tabBarLabel: 'PW 찾기',
         }}

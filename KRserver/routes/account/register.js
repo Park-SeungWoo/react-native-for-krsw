@@ -11,7 +11,6 @@ router.use(morgan('dev'));
 router.post('/add', (req, res, next) => {
   const userinfo = req.body;
   console.log(userinfo);
-  // 계정 중복 검사 등 여러가지 처리 후 성공: true, 실패: false
   let user = new Users({
     name: userinfo.name,
     phonenum: userinfo.phnum,
