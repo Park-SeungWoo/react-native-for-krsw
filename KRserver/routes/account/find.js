@@ -11,8 +11,49 @@ router.use(morgan('dev'));
 
 // find user id
 router.get('/findid', (req, res, next) => {
-  user.find({name: req.body.name, phonenum: req.body.phnum}, (err, user) => {
-    console.log(user);
+  const targetemail = req.query.email;
+  user.find({name: req.query.name, email: targetemail}, (err, user) => {
+    if (user.length == 0) {
+      res.send(false);
+    } else {
+      res.send(true);
+      console.log(user);
+      // render email content
+      ejs.renderFile(
+        './forms/emailformid.ejs',
+        {UserId: `${user[0].id}`, UserName: `${user[0].name}`},
+        function (err, data) {
+          if (err) console.log(err);
+          else emailtemplete = data;
+        },
+      );
+
+      // send user id to user's email
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: EMAIL,
+          pass: EMAILPW,
+        },
+      });
+
+      // set email content
+      const option = {
+        from: EMAIL,
+        to: targetemail,
+        subject: '계정 아이디를 확인해주세요!',
+        html: emailtemplete,
+      };
+
+      transporter.sendMail(option, (error, info) => {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Finish sending email : ' + info.response);
+        }
+        transporter.close();
+      });
+    }
   });
 });
 
@@ -47,7 +88,7 @@ router.get('/getcode', async (req, res, next) => {
   let emailtemplete;
 
   ejs.renderFile(
-    './forms/emailform.ejs',
+    './forms/emailformcode.ejs',
     {authcode1: '0', authcode2: '9', authcode3: '2', authcode4: '7'},
     function (err, data) {
       if (err) console.log(err);

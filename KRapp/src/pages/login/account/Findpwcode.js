@@ -1,4 +1,3 @@
-import {CommonActions} from '@react-navigation/native';
 import React, {useState, useRef} from 'react';
 import {
   Appearance,
@@ -11,7 +10,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {useEffect} from 'react/cjs/react.development';
-import {IPADDR} from '../../../env.json';
+import {IPADDR} from '../../../../env.json';
 
 const isDarkmode = Appearance.getColorScheme() == 'dark';
 

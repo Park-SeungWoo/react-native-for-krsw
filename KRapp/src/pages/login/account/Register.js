@@ -14,7 +14,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import DateTimePicker from '@react-native-community/datetimepicker';
 import BottomSheet from 'reanimated-bottom-sheet';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {IPADDR} from '../../../env.json';
+import {IPADDR} from '../../../../env.json';
 
 const pheight = Dimensions.get('window').height;
 const isDarkmode = Appearance.getColorScheme() == 'dark';

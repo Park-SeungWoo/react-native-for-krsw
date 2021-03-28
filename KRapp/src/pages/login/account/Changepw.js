@@ -89,7 +89,6 @@ const ChangePw = ({navigation, route}) => {
               routes: [{name: 'Login'}],
             }),
           );
-          console.log(json);
         } else {
           alert(
             '비밀번호 변경에 실패하였습니다.\n다시 시도하거나 문제가 반복되면 개발자에게 연락을 해주십시오.',

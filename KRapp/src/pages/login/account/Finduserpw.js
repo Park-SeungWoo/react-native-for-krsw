@@ -7,7 +7,7 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native';
-import {IPADDR} from '../../../env.json';
+import {IPADDR} from '../../../../env.json';
 
 const isDarkmode = Appearance.getColorScheme() == 'dark';
 // const isDarkmode = false;

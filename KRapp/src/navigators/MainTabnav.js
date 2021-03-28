@@ -2,7 +2,7 @@ import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Home from '../pages/main/Home';
-import AccountStacknav from '../navigators/AccountStacknav';
+import AccountStacknav from './/AccountStacknav';
 
 const Tab = createBottomTabNavigator();
 
