@@ -21,7 +21,7 @@ const Findpwcode = ({navigation, route}) => {
   const [onfocus, setOnfocus] = useState(''); // set focus
   let timer; // timer interval
 
-  const {email} = route.params;
+  const {email, id} = route.params;
 
   useEffect(() => refarr.current[0].focus(), []);
 
@@ -59,14 +59,14 @@ const Findpwcode = ({navigation, route}) => {
     const option = {
       method: 'GET',
     };
-    fetch(`http://${IPADDR}/find/getcode?email=${email}`, option);
+    fetch(`http://${IPADDR}/find/getcode?email=${email}&id=${id}`, option);
     refarr.current[0].focus();
     setCode(['', '', '', '']);
     setCounter(60);
   };
 
   const _submitCode = () => {
-    fetch(`http://${IPADDR}/find/valcode?code=${code.join('')}`, {
+    fetch(`http://${IPADDR}/find/valcode?code=${code.join('')}&id=${id}`, {
       method: 'GET',
     })
       .then(res => res.json())

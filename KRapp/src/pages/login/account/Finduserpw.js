@@ -83,8 +83,11 @@ const Finduserpw = ({navigation, route}) => {
     const option = {
       method: 'GET',
     };
-    fetch(`http://${IPADDR}/find/getcode?email=${email.text}`, option);
-    navigation.push('PwCode', {email: email.text});
+    fetch(
+      `http://${IPADDR}/find/getcode?email=${email.text}&id=${id.text}`,
+      option,
+    );
+    navigation.push('PwCode', {email: email.text, id: id.text});
   };
 
   return (

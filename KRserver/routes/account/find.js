@@ -4,6 +4,9 @@ const router = express.Router();
 const nodemailer = require('nodemailer'); // to send verification code to email
 const ejs = require('ejs'); // for sending ejs form to email
 const user = require('../../schemas/user');
+const otp = require('../../schemas/otp');
+const mongoose = require('mongoose');
+const OTPS = mongoose.model('otp');
 const {EMAIL, EMAILPW} = process.env;
 
 router.use(express.json());
@@ -85,11 +88,52 @@ router.get('/valemail', (req, res, next) => {
 // send code to email address
 router.get('/getcode', async (req, res, next) => {
   const targetemail = req.query.email;
+  const targetid = req.query.id;
   let emailtemplete;
+  let code = new Array();
 
+  // create code
+  code.push(Math.floor((Math.random() * 10).toString()));
+  code.push(Math.floor((Math.random() * 10).toString()));
+  code.push(Math.floor((Math.random() * 10).toString()));
+  code.push(Math.floor((Math.random() * 10).toString()));
+
+  // save code in db temporarilly
+  otp.find({email: targetemail, id: targetid}, (err, data) => {
+    if (data.length == 1) {
+      otp.updateOne(
+        {email: targetemail, id: targetid},
+        {$set: {code: code.join('')}},
+        (err, status) => {
+          if (err) console.log('set code err');
+          else
+            console.log(`${targetid} ${targetemail} code => ${code.join('')}`);
+        },
+      );
+    } else {
+      const otpdata = new OTPS({
+        email: targetemail,
+        id: targetid,
+        code: code.join(''),
+      });
+      try {
+        otpdata.save();
+        console.log('success add otp', targetid, targetemail, code.join(''));
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  });
+
+  // render email form
   ejs.renderFile(
     './forms/emailformcode.ejs',
-    {authcode1: '0', authcode2: '9', authcode3: '2', authcode4: '7'},
+    {
+      authcode1: code[0],
+      authcode2: code[1],
+      authcode3: code[2],
+      authcode4: code[3],
+    },
     function (err, data) {
       if (err) console.log(err);
       else emailtemplete = data;
@@ -125,11 +169,14 @@ router.get('/getcode', async (req, res, next) => {
 
 // verificate code
 router.get('/valcode', (req, res, next) => {
-  if (req.query.code == '0927') {
-    res.send(true);
-  } else {
-    res.send(false);
-  }
+  otp.findOne({id: req.query.id}, (err, user) => {
+    if (user.code == req.query.code) {
+      otp.deleteOne({id: req.query.id, code: req.query.code}, (err, data) => {
+        if (err) console.log(err);
+      });
+      res.send(true);
+    } else res.send(false);
+  });
 });
 
 router.patch('/changepw', (req, res, next) => {
