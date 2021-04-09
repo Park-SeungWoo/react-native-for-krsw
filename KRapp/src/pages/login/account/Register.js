@@ -22,6 +22,7 @@ const isDarkmode = Appearance.getColorScheme() == 'dark';
 
 const Register = ({navigation, route}) => {
   const [name, setName] = useState({text: '', status: false, focused: false});
+  const [sex, setSex] = useState('');
   const [phnum, setPhnum] = useState({text: '', status: false, focused: false});
   const [date, setDate] = useState({
     date: new Date(),
@@ -110,6 +111,10 @@ const Register = ({navigation, route}) => {
         ? {...prev, text: txt, status: true}
         : {...prev, text: txt, status: false},
     );
+  };
+
+  const _sexChange = sex => {
+    setSex(sex);
   };
 
   const _phnumChangeTxt = txt => {
@@ -239,6 +244,7 @@ const Register = ({navigation, route}) => {
       },
       body: JSON.stringify({
         name: name.text,
+        sex: sex,
         phnum: phnum.text,
         bdate: date.date,
         email: email.text,
@@ -301,6 +307,58 @@ const Register = ({navigation, route}) => {
                   />
                 )
               ) : null}
+            </View>
+            <View
+              style={{
+                ...styles.inputboxwrap,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}>
+              <TouchableWithoutFeedback onPress={() => _sexChange('M')}>
+                <View
+                  style={
+                    sex == 'M'
+                      ? {...styles.sexbtn, borderColor: '#3e8fef'}
+                      : {...styles.sexbtn, borderColor: '#b1b1b1'}
+                  }>
+                  <MaterialCommunityIcons
+                    name="gender-male"
+                    size={25}
+                    color={sex == 'M' ? '#3e8fef' : '#b1b1b1'}
+                  />
+                  <Text
+                    style={
+                      sex == 'M'
+                        ? {...styles.sextxt, color: '#3e8fef'}
+                        : styles.sextxt
+                    }>
+                    남자
+                  </Text>
+                </View>
+              </TouchableWithoutFeedback>
+              <TouchableWithoutFeedback onPress={() => _sexChange('W')}>
+                <View
+                  style={
+                    sex == 'W'
+                      ? {...styles.sexbtn, borderColor: '#ef8f8f'}
+                      : {...styles.sexbtn, borderColor: '#b1b1b1'}
+                  }>
+                  <MaterialCommunityIcons
+                    name="gender-female"
+                    size={25}
+                    color={sex == 'W' ? '#ef8f8f' : '#b1b1b1'}
+                  />
+                  <Text
+                    style={
+                      sex == 'W'
+                        ? {...styles.sextxt, color: '#ef8f8f'}
+                        : styles.sextxt
+                    }>
+                    여자
+                  </Text>
+                </View>
+              </TouchableWithoutFeedback>
             </View>
             <View
               style={
@@ -371,7 +429,7 @@ const Register = ({navigation, route}) => {
                 />
               </TouchableOpacity>
             </View>
-            <View style={styles.idpwinputwrap}>
+            <View style={styles.inputboxwrap}>
               <View
                 style={
                   email.focused
@@ -422,7 +480,7 @@ const Register = ({navigation, route}) => {
                 )
               ) : null}
             </View>
-            <View style={styles.idpwinputwrap}>
+            <View style={styles.inputboxwrap}>
               <View
                 style={
                   id.focused
@@ -472,7 +530,7 @@ const Register = ({navigation, route}) => {
                 )
               ) : null}
             </View>
-            <View style={styles.idpwinputwrap}>
+            <View style={styles.inputboxwrap}>
               <View
                 style={
                   pw.focused
@@ -523,7 +581,7 @@ const Register = ({navigation, route}) => {
                 )
               ) : null}
             </View>
-            <View style={styles.idpwinputwrap}>
+            <View style={styles.inputboxwrap}>
               <View
                 style={
                   pwchk.focused
@@ -581,6 +639,7 @@ const Register = ({navigation, route}) => {
         </TouchableWithoutFeedback>
         <View style={styles.footer}>
           {name.status &&
+          sex != '' &&
           phnum.status &&
           date.status &&
           email.status &&
@@ -648,8 +707,23 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
   },
-  idpwinputwrap: {
+  inputboxwrap: {
     width: '70%',
+  },
+  sexbtn: {
+    width: '48.8%',
+    height: 44,
+    borderWidth: 2,
+    borderRadius: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sextxt: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#b1b1b1',
+    marginLeft: 10,
   },
   idpwstatustxt: {
     fontSize: 15,

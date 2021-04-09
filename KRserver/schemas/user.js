@@ -6,6 +6,10 @@ const userSchema = new Schema({
     type: String,
     require: true,
   },
+  sex: {
+    type: String,
+    require: true,
+  },
   phonenum: {
     type: String,
     require: true,

@@ -13,8 +13,9 @@ router.post('/add', (req, res, next) => {
   console.log(userinfo);
   let user = new Users({
     name: userinfo.name,
+    sex: userinfo.sex,
     phonenum: userinfo.phnum,
-    birthday: new Date(),
+    birthday: userinfo.bdate,
     email: userinfo.email,
     id: userinfo.id,
     password: userinfo.pw,

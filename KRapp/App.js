@@ -17,9 +17,7 @@ const Stack = createStackNavigator();
 const App = () => {
   return (
     <NavigationContainer
-      theme={Appearance.getColorScheme() === 'dark' ? DarkTheme : DefaultTheme}
-      // theme={DarkTheme}
-    >
+      theme={Appearance.getColorScheme() === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen
           name="Login"

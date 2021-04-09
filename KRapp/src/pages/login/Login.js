@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   StyleSheet,
@@ -9,6 +9,7 @@ import {
   Appearance,
 } from 'react-native';
 import {IPADDR} from '../../../env.json';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const isDarkmode = Appearance.getColorScheme() == 'dark';
 // const isDarkmode = false;
@@ -16,6 +17,24 @@ const isDarkmode = Appearance.getColorScheme() == 'dark';
 const Login = ({navigation, route}) => {
   const [id, setId] = useState('');
   const [pw, setPw] = useState('');
+
+  useEffect(async () => {
+    const userinfo = await AsyncStorage.getItem('@LoginInfo');
+    if (userinfo != null) {
+      const userdata = JSON.parse(userinfo);
+      const data = await login(userdata.id, userdata.pw);
+      if (data.login) {
+        navigation.navigate('Main', {
+          screen: 'Home',
+          params: {
+            userdata: data.userdata,
+          },
+        });
+      } else {
+        console.log('로그인 에러!\n다시 로그인 해주세요!');
+      }
+    }
+  }, []);
 
   const _gotoRegister = () => {
     navigation.push('Register');
@@ -27,7 +46,28 @@ const Login = ({navigation, route}) => {
     });
   };
 
-  const _clickSubmit = () => {
+  const _clickSubmit = async () => {
+    // login
+    const data = await login(id, pw);
+
+    if (data.login) {
+      await AsyncStorage.setItem(
+        '@LoginInfo',
+        JSON.stringify({id: id, pw: pw}),
+      );
+      navigation.navigate('Main', {
+        screen: 'Home',
+        params: {
+          userdata: data.userdata,
+        },
+      });
+    } else {
+      if (data.iderr) alert('존재하지 않는 아이디입니다.');
+      else alert('비밀번호를 다시 한번 확인해주세요.');
+    }
+  };
+
+  const login = async (id, pw) => {
     // login
     const option = {
       method: 'POST',
@@ -40,20 +80,10 @@ const Login = ({navigation, route}) => {
         pw: pw,
       }),
     };
-    fetch(`http://${IPADDR}/login/validate`, option)
+    return fetch(`http://${IPADDR}/login/validate`, option)
       .then(res => res.json())
       .then(json => {
-        if (json.login)
-          navigation.navigate('Main', {
-            screen: 'Home',
-            params: {
-              userdata: json.userdata,
-            },
-          });
-        else {
-          if (json.iderr) alert('존재하지 않는 아이디입니다.');
-          else alert('비밀번호를 다시 한번 확인해주세요.');
-        }
+        return json;
       });
   };
 

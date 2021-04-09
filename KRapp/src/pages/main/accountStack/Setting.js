@@ -1,6 +1,7 @@
 import {CommonActions} from '@react-navigation/native';
 import React from 'react';
 import {StyleSheet, View, Text, Appearance} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const isDarkmode = Appearance.getColorScheme() == 'dark';
 // const isDarkmode = false;
@@ -8,8 +9,9 @@ const isDarkmode = Appearance.getColorScheme() == 'dark';
 const Setting = ({navigation, route}) => {
   const {userdata} = route.params;
 
-  const _logout = () => {
+  const _logout = async () => {
     // logout시 필요한 data들 다 정리하고 나가기
+    await AsyncStorage.removeItem('@LoginInfo');
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
