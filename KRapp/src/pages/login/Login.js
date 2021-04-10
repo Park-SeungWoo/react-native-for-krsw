@@ -9,6 +9,7 @@ import {
   Appearance,
 } from 'react-native';
 import {IPADDR} from '../../../env.json';
+import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const isDarkmode = Appearance.getColorScheme() == 'dark';
@@ -20,21 +21,68 @@ const Login = ({navigation, route}) => {
 
   useEffect(async () => {
     const userinfo = await AsyncStorage.getItem('@LoginInfo');
+    // user login data exists
     if (userinfo != null) {
       const userdata = JSON.parse(userinfo);
       const data = await login(userdata.id, userdata.pw);
+      // login succeed
       if (data.login) {
-        navigation.navigate('Main', {
-          screen: 'Home',
-          params: {
-            userdata: data.userdata,
-          },
-        });
+        const usertoken = await _checkNotificationToken(userdata.id); // check token in firebase server
+        if (usertoken != data.userdata.token)
+          _saveToken(userdata.id, usertoken);
+        const coupleinfo = await AsyncStorage.getItem('@CoupleInfo');
+        // check couple data
+        if (coupleinfo == null) {
+          // const coupledata = JSON.parse(coupleinfo);
+          navigation.navigate('Main', {
+            screen: 'Home',
+            params: {
+              userdata: data.userdata,
+              // coupledata: coupledata,
+            },
+          });
+          // couple data doesn't exists
+        } else {
+          alert('아직 커플 신고가 안되어있네요!\n먼저 커플 신고를 해주세요!');
+          navigation.navigate('Main', {
+            screen: 'Accountnav',
+            params: {
+              screen: 'SetPrecious',
+              params: {
+                userdata: data.userdata,
+              },
+            },
+          });
+        }
+        // something went wrong during login
       } else {
         console.log('로그인 에러!\n다시 로그인 해주세요!');
       }
     }
   }, []);
+
+  const _checkNotificationToken = async () => {
+    const token = await messaging().getToken();
+    return token;
+  };
+
+  const _saveToken = (id, token) => {
+    // sabe to db
+    console.log('change token');
+    const opt = {
+      method: 'PATCH',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      body: JSON.stringify({
+        id: id,
+        token: token,
+      }),
+    };
+
+    fetch(`http://${IPADDR}/token/change`, opt);
+  };
 
   const _gotoRegister = () => {
     navigation.push('Register');
@@ -55,12 +103,31 @@ const Login = ({navigation, route}) => {
         '@LoginInfo',
         JSON.stringify({id: id, pw: pw}),
       );
-      navigation.navigate('Main', {
-        screen: 'Home',
-        params: {
-          userdata: data.userdata,
-        },
-      });
+      const usertoken = await _checkNotificationToken(id); // check token in firebase server
+      if (usertoken != data.userdata.token) _saveToken(id, usertoken);
+
+      // check if there is couple data
+      // const iscouple = await AsyncStorage.getItem('@CoupleInfo');
+      const iscouple = {};
+      if (iscouple != null) {
+        navigation.navigate('Main', {
+          screen: 'Home',
+          params: {
+            userdata: data.userdata,
+          },
+        });
+      } else {
+        alert('아직 커플 신고가 안되어있네요!\n먼저 커플 신고를 해주세요!');
+        navigation.navigate('Main', {
+          screen: 'Accountnav',
+          params: {
+            screen: 'SetPrecious',
+            params: {
+              userdata: data.userdata,
+            },
+          },
+        });
+      }
     } else {
       if (data.iderr) alert('존재하지 않는 아이디입니다.');
       else alert('비밀번호를 다시 한번 확인해주세요.');

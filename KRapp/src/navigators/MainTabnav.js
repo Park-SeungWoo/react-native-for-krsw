@@ -1,5 +1,6 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Home from '../pages/main/Home';
 import AccountStacknav from './AccountStacknav';
@@ -21,6 +22,8 @@ const MainTabnav = ({route}) => {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
+        tabBarVisible:
+          getFocusedRouteNameFromRoute(route) == 'SetPrecious' ? false : true,
       })}>
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen

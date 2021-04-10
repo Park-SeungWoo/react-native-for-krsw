@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 const {Schema} = mongoose;
 
 const relationSchema = new Schema({
-  man: {
+  firstperson: {
     type: String,
     require: true,
   },
-  woman: {
+  secondperson: {
     type: String,
     require: true,
   },

@@ -33,10 +33,8 @@ io.on('connection', socket => {
   socket.on('c2smsg', data => {
     console.log('c2s (name) : ' + data.name);
     console.log('c2s (msg) : ' + data.msg);
-    console.log('c2s (date) : ' + data.time);
-    // setTimeout(() => {
+    console.log('c2s (date) : ' + Date(data.time));
     socket.emit('s2cmsg', {txt: data.msg, align: 'L', time: data.time});
-    // }, 3000);
   });
   socket.on('disconnect', reason => {
     console.log(reason);
@@ -47,19 +45,21 @@ io.on('connection', socket => {
 const login = require('./routes/account/login');
 const register = require('./routes/account/register');
 const find = require('./routes/account/find');
+const token = require('./routes/token');
 
 app.use('/login', login);
 app.use('/register', register);
 app.use('/find', find);
+app.use('/token', token);
+
+// err handling
+app.use(function (err, req, res, next) {
+  res.json({mes: err.message});
+});
 
 // listen
 server.listen(process.env.PORT || 3000, process.env.HOST, () => {
   console.log(
     `Server is listening at ${process.env.HOST}:${process.env.PORT || 3000}`,
   );
-});
-
-// err handling
-app.use(function (err, req, res, next) {
-  res.json({mes: err.message});
 });

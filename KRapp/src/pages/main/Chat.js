@@ -10,6 +10,8 @@ import {
   FlatList,
 } from 'react-native';
 import {io} from 'socket.io-client';
+import messaging from '@react-native-firebase/messaging';
+import sendPushNotification from '../../methods/sendPushNotification';
 import {IPADDR} from '../../../env.json';
 
 const isDarkmode = Appearance.getColorScheme() == 'dark';
@@ -22,25 +24,10 @@ const Chat = ({navigation, route}) => {
 
   const {userdata} = route.params;
 
-  // when move to other tabs
-  useEffect(() => {
-    const unsub = navigation.addListener('blur', () => {
-      socket.disconnect();
-    });
-    return unsub;
-  }, [navigation]);
-
-  // when come back from other tabs
-  useEffect(() => {
-    const unsub = navigation.addListener('focus', () => {
-      socket.connect();
-    });
-    return unsub;
-  }, [navigation]);
-
   // socket related
   useEffect(() => {
     // connect to the socket server
+    console.log('socket connect');
     socket.io.connect();
 
     // operate when connected to the socket server
@@ -63,8 +50,25 @@ const Chat = ({navigation, route}) => {
     return () => socket.disconnect();
   }, []);
 
+  // when move to other tabs
+  useEffect(() => {
+    const unsub = navigation.addListener('blur', () => {
+      socket.disconnect();
+    });
+    return unsub;
+  }, [navigation]);
+
+  // when come back from other tabs
+  useEffect(() => {
+    const unsub = navigation.addListener('focus', () => {
+      socket.connect();
+    });
+    return unsub;
+  }, [navigation]);
+
   // send data to the certain room which includes current user.
-  const _socketsend = () => {
+  const _socketsend = async () => {
+    sendPushNotification([userdata.token], userdata.name, text); // send notification to partner
     setChats(prev => [...prev, {txt: text, align: 'R', time: Date.now()}]);
     socket.emit('c2smsg', {name: userdata.email, msg: text, time: Date.now()});
     setText('');
@@ -92,25 +96,53 @@ const Chat = ({navigation, route}) => {
                     ? {...styles.chatV, justifyContent: 'flex-start'}
                     : {...styles.chatV, justifyContent: 'flex-end'}
                 }>
-                <Text style={styles.datetxt}>
-                  {h > 12 ? 'Pm' + (h - 12) : 'Am' + h}
-                  {'/' + m}
-                </Text>
-                <Text
-                  key={chat.item.time}
-                  style={
-                    chat.item.align == 'L'
-                      ? {
-                          ...styles.chattxt,
-                          color: '#faaffa',
-                        }
-                      : {
-                          ...styles.chattxt,
-                          color: '#afaffa',
-                        }
-                  }>
-                  {chat.item.txt}
-                </Text>
+                {chat.item.align == 'L' ? (
+                  // left text
+                  <>
+                    <Text
+                      key={chat.item.time}
+                      style={
+                        chat.item.align == 'L'
+                          ? {
+                              ...styles.chattxt,
+                              color: '#faaffa',
+                            }
+                          : {
+                              ...styles.chattxt,
+                              color: '#afaffa',
+                            }
+                      }>
+                      {chat.item.txt}
+                    </Text>
+                    <Text style={styles.datetxt}>
+                      {h > 12 ? 'Pm' + (h - 12) : 'Am' + h}
+                      {':' + m}
+                    </Text>
+                  </>
+                ) : (
+                  // right text
+                  <>
+                    <Text style={styles.datetxt}>
+                      {h > 12 ? 'Pm' + (h - 12) : 'Am' + h}
+                      {':' + m}
+                    </Text>
+                    <Text
+                      key={chat.item.time}
+                      style={
+                        chat.item.align == 'L'
+                          ? {
+                              ...styles.chattxt,
+                              color: '#faaffa',
+                            }
+                          : {
+                              ...styles.chattxt,
+                              color: '#afaffa',
+                            }
+                      }>
+                      {chat.item.txt}
+                    </Text>
+                  </>
+                )}
               </View>
             );
           }}
@@ -151,16 +183,18 @@ const styles = StyleSheet.create({
   },
   chatScroll: {
     width: '100%',
-    margin: 10,
   },
   chatV: {
+    alignItems: 'center',
     flexDirection: 'row',
     width: '100%',
     height: 20,
+    marginVertical: 5,
   },
   datetxt: {
     fontSize: 10,
     color: isDarkmode ? '#000' : '#f1f1f1',
+    alignSelf: 'flex-end',
   },
   chattxt: {
     fontSize: 20,

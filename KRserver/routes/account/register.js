@@ -19,6 +19,7 @@ router.post('/add', (req, res, next) => {
     email: userinfo.email,
     id: userinfo.id,
     password: userinfo.pw,
+    token: '',
   });
   try {
     user.save();

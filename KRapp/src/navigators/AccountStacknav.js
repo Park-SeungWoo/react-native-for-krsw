@@ -22,7 +22,14 @@ const AccountStacknav = ({route}) => {
         component={Setting}
         initialParams={route.params}
       />
-      <Stack.Screen name="SetPrecious" component={SetPrecious} />
+      <Stack.Screen
+        name="SetPrecious"
+        component={SetPrecious}
+        options={{
+          headerShown: false,
+          gestureEnabled: false,
+        }}
+      />
     </Stack.Navigator>
   );
 };

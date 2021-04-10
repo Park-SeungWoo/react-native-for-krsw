@@ -1,20 +1,45 @@
 import 'react-native-gesture-handler';
-import React from 'react';
-import {Appearance} from 'react-native'; // to detect color scheme (dark or light)
+import React, {useEffect} from 'react';
+import {Appearance, Alert} from 'react-native';
 import {
   NavigationContainer,
   DarkTheme,
   DefaultTheme,
 } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import MainTabnav from './src/navigators/MainTabnav';
-import Login from './src/pages/login/Login';
-import Register from './src/pages/login/account/Register';
-import FindTabnav from './src/navigators/FindTabnav';
+import messaging from '@react-native-firebase/messaging';
+import MainTabnav from './navigators/MainTabnav';
+import Login from './pages/login/Login';
+import Register from './pages/login/account/Register';
+import FindTabnav from './navigators/FindTabnav';
 
 const Stack = createStackNavigator();
 
+// notification permission
+async function requestUserPermission() {
+  const authStatus = await messaging().requestPermission();
+  const enabled =
+    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+  if (enabled) {
+    console.log('Authorization status:', authStatus);
+  }
+}
+
 const App = () => {
+  // check permission
+  useEffect(async () => {
+    await requestUserPermission();
+  });
+
+  // notification in foreground
+  useEffect(() => {
+    messaging().onMessage(async remoteMessage => {
+      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+    });
+  }, []);
+
   return (
     <NavigationContainer
       theme={Appearance.getColorScheme() === 'dark' ? DarkTheme : DefaultTheme}>
