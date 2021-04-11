@@ -14,6 +14,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import DateTimePicker from '@react-native-community/datetimepicker';
 import BottomSheet from 'reanimated-bottom-sheet';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import messaging from '@react-native-firebase/messaging';
 import {IPADDR} from '../../../../env.json';
 
 const pheight = Dimensions.get('window').height;
@@ -234,8 +235,9 @@ const Register = ({navigation, route}) => {
   ////////////
   // submit //
   ////////////
-  const _submitClick = () => {
+  const _submitClick = async () => {
     // send datas to server to add user
+    const FBtoken = await messaging().getToken();
     const option = {
       method: 'POST',
       headers: {
@@ -246,10 +248,11 @@ const Register = ({navigation, route}) => {
         name: name.text,
         sex: sex,
         phnum: phnum.text,
-        bdate: date.date,
+        bdate: new Date(date.date.setDate(date.date.getDate() + 1)),
         email: email.text,
         id: id.text,
         pw: pw.text,
+        token: FBtoken,
       }),
     };
     fetch(`http://${IPADDR}/register/add`, option)

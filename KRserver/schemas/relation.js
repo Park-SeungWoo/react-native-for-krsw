@@ -2,16 +2,16 @@ const mongoose = require('mongoose');
 const {Schema} = mongoose;
 
 const relationSchema = new Schema({
-  firstperson: {
-    type: String,
-    require: true,
-  },
-  secondperson: {
-    type: String,
+  persons: {
+    type: Array,
     require: true,
   },
   startdate: {
     type: Date,
+    require: true,
+  },
+  roomname: {
+    type: String,
     require: true,
   },
 });

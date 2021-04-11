@@ -25,6 +25,7 @@ const AccountStacknav = ({route}) => {
       <Stack.Screen
         name="SetPrecious"
         component={SetPrecious}
+        initialParams={route.params}
         options={{
           headerShown: false,
           gestureEnabled: false,

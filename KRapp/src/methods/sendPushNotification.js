@@ -1,6 +1,6 @@
 import {FBAPIKEY} from '../../env.json';
 
-const sendPushNotification = async (tokens, titlemsg, bodymsg) => {
+const sendPushNotification = async (tokens, titlemsg, bodymsg, dataobj) => {
   const message = {
     registration_ids: tokens,
     notification: {
@@ -10,6 +10,7 @@ const sendPushNotification = async (tokens, titlemsg, bodymsg) => {
       priority: 'high',
       content_available: true,
     },
+    data: dataobj != null ? dataobj : {},
   };
 
   const option = {
@@ -21,8 +22,8 @@ const sendPushNotification = async (tokens, titlemsg, bodymsg) => {
     body: JSON.stringify(message),
   };
 
-  fetch('https://fcm.googleapis.com/fcm/send', option).then(res =>
-    console.log(res),
+  fetch('https://fcm.googleapis.com/fcm/send', option).catch(err =>
+    console.log(err),
   );
 };
 

@@ -24,10 +24,10 @@ const Account = ({navigation, route}) => {
         <View style={styles.profileimgv}></View>
         <View>
           <Text>{userdata.name}</Text>
-          <Text>{'서규리'}</Text>
-          {/* <Text>{`아직 등록된 ${
+          {/* <Text>{'서규리'}</Text> */}
+          <Text>{`아직 등록된 ${
             sex == 'M' ? '여자친구가' : '남자친구가'
-          } 없네요 먼저 등록해주세요!`}</Text> */}
+          } 없네요 먼저 등록해주세요!`}</Text>
           <Text>{userdata.email}</Text>
         </View>
       </View>

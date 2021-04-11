@@ -32,18 +32,17 @@ const Login = ({navigation, route}) => {
           _saveToken(userdata.id, usertoken);
         const coupleinfo = await AsyncStorage.getItem('@CoupleInfo');
         // check couple data
-        if (coupleinfo == null) {
-          // const coupledata = JSON.parse(coupleinfo);
+        if (coupleinfo != null) {
+          const coupledata = JSON.parse(coupleinfo);
           navigation.navigate('Main', {
             screen: 'Home',
             params: {
               userdata: data.userdata,
-              // coupledata: coupledata,
+              coupledata: coupledata,
             },
           });
           // couple data doesn't exists
         } else {
-          alert('아직 커플 신고가 안되어있네요!\n먼저 커플 신고를 해주세요!');
           navigation.navigate('Main', {
             screen: 'Accountnav',
             params: {
@@ -107,17 +106,17 @@ const Login = ({navigation, route}) => {
       if (usertoken != data.userdata.token) _saveToken(id, usertoken);
 
       // check if there is couple data
-      // const iscouple = await AsyncStorage.getItem('@CoupleInfo');
-      const iscouple = {};
+      const iscouple = await AsyncStorage.getItem('@CoupleInfo');
       if (iscouple != null) {
+        const coupledata = JSON.parse(iscouple);
         navigation.navigate('Main', {
           screen: 'Home',
           params: {
             userdata: data.userdata,
+            coupledata: coupledata,
           },
         });
       } else {
-        alert('아직 커플 신고가 안되어있네요!\n먼저 커플 신고를 해주세요!');
         navigation.navigate('Main', {
           screen: 'Accountnav',
           params: {

@@ -29,12 +29,17 @@ mongoose.connect(
 io.on('connection', socket => {
   // chect clients length
   console.log(`${io.engine.clientsCount} connected!`);
+  socket.on('joinemit', roomname => {
+    socket.join(roomname);
+  });
 
   socket.on('c2smsg', data => {
     console.log('c2s (name) : ' + data.name);
     console.log('c2s (msg) : ' + data.msg);
     console.log('c2s (date) : ' + Date(data.time));
-    socket.emit('s2cmsg', {txt: data.msg, align: 'L', time: data.time});
+    socket
+      .to(data.name)
+      .emit('s2cmsg', {txt: data.msg, align: 'L', time: data.time});
   });
   socket.on('disconnect', reason => {
     console.log(reason);
@@ -46,11 +51,13 @@ const login = require('./routes/account/login');
 const register = require('./routes/account/register');
 const find = require('./routes/account/find');
 const token = require('./routes/token');
+const couple = require('./routes/couple');
 
 app.use('/login', login);
 app.use('/register', register);
 app.use('/find', find);
 app.use('/token', token);
+app.use('/couple', couple);
 
 // err handling
 app.use(function (err, req, res, next) {

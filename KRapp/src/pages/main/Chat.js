@@ -62,6 +62,7 @@ const Chat = ({navigation, route}) => {
   useEffect(() => {
     const unsub = navigation.addListener('focus', () => {
       socket.connect();
+      socket.emit('joinemit', 'partner+myid');
     });
     return unsub;
   }, [navigation]);
@@ -70,7 +71,7 @@ const Chat = ({navigation, route}) => {
   const _socketsend = async () => {
     sendPushNotification([userdata.token], userdata.name, text); // send notification to partner
     setChats(prev => [...prev, {txt: text, align: 'R', time: Date.now()}]);
-    socket.emit('c2smsg', {name: userdata.email, msg: text, time: Date.now()});
+    socket.emit('c2smsg', {name: 'partner+myid', msg: text, time: Date.now()});
     setText('');
   };
   return (

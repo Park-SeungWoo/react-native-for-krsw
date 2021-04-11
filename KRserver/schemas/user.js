@@ -32,7 +32,7 @@ const userSchema = new Schema({
   },
   token: {
     type: String,
-    require: false,
+    require: true,
   },
 });
 
