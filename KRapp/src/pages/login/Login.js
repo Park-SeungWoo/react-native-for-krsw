@@ -24,7 +24,8 @@ const Login = ({navigation, route}) => {
     // user login data exists
     if (userinfo != null) {
       const userdata = JSON.parse(userinfo);
-      const data = await login(userdata.id, userdata.pw);
+      console.log(userdata);
+      const data = await login(userdata.id, userdata.password);
       // login succeed
       if (data.login) {
         const usertoken = await _checkNotificationToken(userdata.id); // check token in firebase server
@@ -55,7 +56,7 @@ const Login = ({navigation, route}) => {
         }
         // something went wrong during login
       } else {
-        console.log('로그인 에러!\n다시 로그인 해주세요!');
+        alert('로그인 에러!\n다시 로그인 해주세요!');
       }
     }
   }, []);
@@ -98,10 +99,7 @@ const Login = ({navigation, route}) => {
     const data = await login(id, pw);
 
     if (data.login) {
-      await AsyncStorage.setItem(
-        '@LoginInfo',
-        JSON.stringify({id: id, pw: pw}),
-      );
+      await AsyncStorage.setItem('@LoginInfo', JSON.stringify(data.userdata));
       const usertoken = await _checkNotificationToken(id); // check token in firebase server
       if (usertoken != data.userdata.token) _saveToken(id, usertoken);
 

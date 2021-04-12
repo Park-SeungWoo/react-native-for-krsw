@@ -23,7 +23,11 @@ const MainTabnav = ({route}) => {
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         tabBarVisible:
-          getFocusedRouteNameFromRoute(route) == 'SetPrecious' ? false : true,
+          getFocusedRouteNameFromRoute(route) == 'SetPrecious' ||
+          getFocusedRouteNameFromRoute(route) == 'Accept' ||
+          getFocusedRouteNameFromRoute(route) == 'Wait'
+            ? false
+            : true,
       })}>
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen

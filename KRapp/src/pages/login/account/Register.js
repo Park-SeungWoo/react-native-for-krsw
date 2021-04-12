@@ -248,7 +248,7 @@ const Register = ({navigation, route}) => {
         name: name.text,
         sex: sex,
         phnum: phnum.text,
-        bdate: new Date(date.date.setDate(date.date.getDate() + 1)),
+        bdate: date.date,
         email: email.text,
         id: id.text,
         pw: pw.text,

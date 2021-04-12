@@ -19,7 +19,8 @@ router.get('/find', (req, res, next) => {
   const {id, name} = req.query;
   user.find({id: id, name: name}, (err, user) => {
     if (err) res.send(false);
-    else res.send({token: user[0].token});
+    else if (user.length != 0) res.send({token: user[0].token});
+    else res.send(false);
   });
 });
 

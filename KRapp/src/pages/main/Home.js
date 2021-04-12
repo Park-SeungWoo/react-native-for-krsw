@@ -5,11 +5,11 @@ const Home = ({navigation, route}) => {
   const colors = ['#faafaf', '#afaffa', '#affaaf', '#fafaaf'];
   let color = 1;
   const [bcolor, setBcolor] = useState(colors[color]);
-  const {userdata} = route.params;
+  const {userdata, coupledata} = route.params;
   let interval;
 
   useEffect(() => {
-    alert(JSON.stringify(userdata));
+    alert(JSON.stringify(coupledata));
     interval = setInterval(() => {
       if (color < 3) {
         color += 1;
