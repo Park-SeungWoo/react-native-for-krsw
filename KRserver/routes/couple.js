@@ -6,6 +6,7 @@ const temprelation = require('../schemas/temprelation');
 const mongoose = require('mongoose');
 const Relation = mongoose.model('relation');
 const Temprelation = mongoose.model('temprelation');
+const Chats = mongoose.model('chat');
 
 router.use(express.json());
 router.use(morgan('dev'));
@@ -83,13 +84,20 @@ router.get('/gettempr', (req, res, next) => {
 });
 
 router.post('/addrelation', (req, res, next) => {
-  const {persons, startdate, roomname} = req.body;
+  const {persons, startdate, roomname, firstp, secondp} = req.body;
   const data = new Relation({
     persons: persons,
+    firstp: firstp,
+    secondp: secondp,
     startdate: startdate,
     roomname: roomname,
   });
+  const chatting = new Chats({
+    roomname: roomname,
+    chat: new Array(),
+  });
   data.save();
+  chatting.save();
   res.redirect('/');
 });
 

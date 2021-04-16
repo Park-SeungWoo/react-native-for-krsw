@@ -87,8 +87,10 @@ const acceptCoupleRequest = ({navigation, route}) => {
   const _addRelation = async () => {
     const data = {
       persons: [relation.resid, relation.reqid],
+      firstp: relation.resname,
+      secondp: relation.reqname,
       startdate: new Date(relation.startdate),
-      roomname: `${relation.resid}${relation.reqid}`,
+      roomname: `${relation.resid}_${relation.reqid}`,
     };
     const option = {
       method: 'POST',

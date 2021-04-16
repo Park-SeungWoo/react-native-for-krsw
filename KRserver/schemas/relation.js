@@ -6,6 +6,14 @@ const relationSchema = new Schema({
     type: Array,
     require: true,
   },
+  firstp: {
+    type: String,
+    require: true,
+  },
+  secondp: {
+    type: String,
+    require: true,
+  },
   startdate: {
     type: Date,
     require: true,

@@ -5,6 +5,8 @@ import {
   NavigationContainer,
   DarkTheme,
   DefaultTheme,
+  getFocusedRouteNameFromRoute,
+  useRoute,
 } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import messaging from '@react-native-firebase/messaging';
@@ -13,20 +15,23 @@ import MainTabnav from './navigators/MainTabnav';
 import Login from './pages/login/Login';
 import Register from './pages/login/account/Register';
 import FindTabnav from './navigators/FindTabnav';
-import {navigationRef, navigate, gotoSetpre} from './methods/Rootnavigator';
+import Chat from './pages/main/Chat';
+import {
+  navigationRef,
+  navigate,
+  gotoSetpre,
+  goToLogin,
+} from './methods/Rootnavigator';
 
 const Stack = createStackNavigator();
 
 // notification permission
 async function requestUserPermission() {
-  const authStatus = await messaging().requestPermission();
-  const enabled =
-    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-  if (enabled) {
-    console.log('Authorization status:', authStatus);
-  }
+  // const authStatus =
+  await messaging().requestPermission();
+  // const enabled =
+  //   authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+  //   authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 }
 
 const App = () => {
@@ -35,10 +40,11 @@ const App = () => {
     await requestUserPermission();
   });
 
+  // const approute = useRoute();
+
   // notification in foreground
   useEffect(() => {
     messaging().onMessage(async remoteMessage => {
-      // alert(JSON.stringify(remoteMessage.data));
       const userdata = await AsyncStorage.getItem('@LoginInfo');
       if (userdata != null) {
         const userinfo = JSON.parse(userdata);
@@ -55,18 +61,16 @@ const App = () => {
             });
             break;
           case 'responsecouple':
-            const couple = JSON.stringify(remoteMessage.data.coupledata);
-            await AsyncStorage.setItem('@CoupleInfo', couple);
-            navigate('Main', {
-              screen: 'Home',
-              params: {
-                userdata: userinfo,
-                coupledata: remoteMessage.data.coupledata,
-              },
-            });
+            await AsyncStorage.setItem(
+              '@CoupleInfo',
+              remoteMessage.data.coupledata,
+            );
+            goToLogin();
             break;
           case 'rejectcouple':
             gotoSetpre(userdata);
+            break;
+          case 'chat':
             break;
           default:
             break;
@@ -112,6 +116,14 @@ const App = () => {
             options={{
               headerShown: false,
               gestureEnabled: false,
+            }}
+          />
+          <Stack.Screen
+            name="Chat"
+            component={Chat}
+            options={{
+              headerTransparent: true,
+              headerBackTitleVisible: false,
             }}
           />
         </Stack.Navigator>

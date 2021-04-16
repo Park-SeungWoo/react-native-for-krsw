@@ -10,7 +10,9 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@flyerhq/react-native-keyboard-accessory-view": "^2.1.1",
     "@react-native-async-storage/async-storage": "^1.15.1",
+    "@react-native-clipboard/clipboard": "^1.7.0",
     "@react-native-community/datetimepicker": "^3.4.2",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-native-firebase/app": "^11.2.0",
@@ -18,10 +20,13 @@
     "@react-navigation/bottom-tabs": "^5.11.8",
     "@react-navigation/native": "^5.9.3",
     "@react-navigation/stack": "^5.14.3",
+    "nanoid": "^3.1.22",
     "react": "17.0.1",
     "react-native": "0.64.0",
     "react-native-gesture-handler": "^1.10.3",
+    "react-native-get-random-values": "^1.7.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.3",
+    "react-native-popover-view": "^3.1.1",
     "react-native-push-notification": "^7.2.3",
     "react-native-reanimated": "^2.0.1",
     "react-native-safe-area-context": "^3.2.0",

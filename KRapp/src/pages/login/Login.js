@@ -24,7 +24,6 @@ const Login = ({navigation, route}) => {
     // user login data exists
     if (userinfo != null) {
       const userdata = JSON.parse(userinfo);
-      console.log(userdata);
       const data = await login(userdata.id, userdata.password);
       // login succeed
       if (data.login) {
@@ -68,7 +67,6 @@ const Login = ({navigation, route}) => {
 
   const _saveToken = (id, token) => {
     // sabe to db
-    console.log('change token');
     const opt = {
       method: 'PATCH',
       headers: {

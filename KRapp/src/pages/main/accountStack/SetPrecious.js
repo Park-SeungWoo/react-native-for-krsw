@@ -102,7 +102,7 @@ const SetPrecious = ({navigation, route}) => {
           );
         } else if (typeof json == 'string') {
           // err
-          console.log(json);
+          alert(json);
         } else {
           fetch(`http://${IPADDR}/couple/reqorres?id=${id}`)
             .then(res => res.json())
