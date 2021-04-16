@@ -10,28 +10,45 @@ import {
 import Clipboard from '@react-native-clipboard/clipboard';
 import Popoverview from 'react-native-popover-view';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {useHeaderHeight} from '@react-navigation/stack';
 import DateBar from './DateBar';
 
 const isDarkmode = Appearance.getColorScheme() == 'dark';
 const pwidth = Dimensions.get('window').width;
 
-const ChatListView = ({chat, userdata, coupledata, deleteChat, viewChat}) => {
+const ChatListView = ({
+  chat,
+  userdata,
+  coupledata,
+  deleteChat,
+  viewChat,
+  partnick,
+  lastidx,
+  moredata,
+}) => {
   // avartar
   const showavartar = chat.item.avartar;
+  const [firmargin, setFirmargin] = useState(0);
+  const headerH = useHeaderHeight();
 
   // pop over
   const popRef = useRef();
   const [showpopover, setShowpopover] = useState(false);
+  let datetxt;
 
   // time
-  let htemp = new Date(chat.item.time).toString().split(':')[0];
-  htemp = htemp.substring(htemp.length - 3) * 1;
-  let mtemp = new Date(chat.item.time).toString().split(':')[1];
-  const h = htemp > 12 ? htemp - 12 : htemp;
-  const m = mtemp;
-  const timestatus = htemp > 12 ? 'Pm' : 'Am';
+  if (chat.item.showdate) {
+    let htemp = new Date(chat.item.time).toString().split(':')[0];
+    htemp = htemp.substring(htemp.length - 3) * 1;
+    let mtemp = new Date(chat.item.time).toString().split(':')[1];
+    const h = htemp > 12 ? htemp - 12 : htemp;
+    const m = mtemp;
+    const timestatus = htemp > 12 ? 'Pm' : 'Am';
+    datetxt = `${h}:${m} ${timestatus}`;
+  }
 
   useEffect(() => {
+    if (!moredata) setFirmargin(chat.index == lastidx ? headerH : 0);
     if (chat.item.sender != userdata.id && chat.item.view == 1) {
       viewChat(chat.item.uniqueid);
     }
@@ -77,10 +94,22 @@ const ChatListView = ({chat, userdata, coupledata, deleteChat, viewChat}) => {
       key={chat.item.uniqueid}
       style={
         chat.item.showdatebar
-          ? {...styles.chatV, justifyContent: 'center'}
+          ? {
+              ...styles.chatV,
+              justifyContent: 'center',
+              marginTop: firmargin,
+            }
           : chat.item.sender != userdata.id
-          ? {...styles.chatV, justifyContent: 'flex-start'}
-          : {...styles.chatV, justifyContent: 'flex-end'}
+          ? {
+              ...styles.chatV,
+              justifyContent: 'flex-start',
+              marginTop: firmargin,
+            }
+          : {
+              ...styles.chatV,
+              justifyContent: 'flex-end',
+              marginTop: firmargin,
+            }
       }>
       {chat.item.showdatebar ? (
         <DateBar data={chat.item} />
@@ -92,13 +121,13 @@ const ChatListView = ({chat, userdata, coupledata, deleteChat, viewChat}) => {
               <View
                 style={
                   showavartar
-                    ? {...styles.LRwraper, marginTop: 20}
+                    ? {...styles.LRwraper, marginTop: 25}
                     : styles.LRwraper
                 }>
                 <View style={styles.avatarV}>
                   {showavartar ? (
                     <>
-                      <Text style={styles.nametxt}>꾸링</Text>
+                      <Text style={styles.nametxt}>{partnick}</Text>
                       <View style={styles.avatar}></View>
                     </>
                   ) : null}
@@ -123,15 +152,20 @@ const ChatListView = ({chat, userdata, coupledata, deleteChat, viewChat}) => {
                     </Text>
                   </View>
                 </TouchableOpacity>
-                <Text style={styles.datetxt}>{`${h}:${m} ${timestatus}`}</Text>
+                <Text style={styles.datetxt}>{datetxt}</Text>
               </View>
             )
           ) : // right text
           chat.item.deletetome ? null : (
-            <View style={styles.LRwraper}>
+            <View
+              style={
+                chat.item.showdate
+                  ? {...styles.LRwraper, marginBottom: 6}
+                  : styles.LRwraper
+              }>
               <View style={styles.additionalinfo}>
                 <Text style={styles.seentxt}>{chat.item.view || null}</Text>
-                <Text style={styles.datetxt}>{`${h}:${m} ${timestatus}`}</Text>
+                <Text style={styles.datetxt}>{datetxt}</Text>
               </View>
               <TouchableOpacity
                 ref={popRef}
@@ -197,19 +231,19 @@ const styles = StyleSheet.create({
   },
   LRwraper: {
     flexDirection: 'row',
-    marginVertical: 3,
+    marginVertical: 2,
   },
   nametxt: {
     position: 'absolute',
     top: -20,
-    left: 48,
+    left: 50,
     fontSize: 16,
     fontWeight: '500',
-    color: '#2f2f2f',
+    color: isDarkmode ? '#f1f1f1' : '#2f2f2f',
   },
   avatarV: {
     width: 45,
-    height: 40,
+    height: 30,
     alignItems: 'center',
   },
   avatar: {
@@ -227,19 +261,20 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   textwrap: {
-    borderRadius: 13,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
     maxWidth: pwidth * 0.7,
-    minHeight: 35,
+    minHeight: 30, // if change this, change avartarV's height
   },
   textV: {
     flexDirection: 'row',
   },
   chattxt: {
-    fontSize: 18,
+    fontSize: 17,
     height: '100%',
-    padding: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
   },
   additionalinfo: {
     justifyContent: 'flex-end',

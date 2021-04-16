@@ -15,26 +15,16 @@ import {io} from 'socket.io-client';
 import {KeyboardAccessoryView} from '@flyerhq/react-native-keyboard-accessory-view';
 import 'react-native-get-random-values'; // for nanoid
 import {nanoid} from 'nanoid'; // to make unique id
+import {SafeAreaView} from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import sendPushNotification from '../../methods/sendPushNotification';
 import {IPADDR} from '../../../env.json';
 import ChatListView from '../../components/ChatListView';
-import {SafeAreaView} from 'react-native-safe-area-context';
 
 const isDarkmode = Appearance.getColorScheme() == 'dark';
 const socket = io(`ws://${IPADDR}`);
 const pwidth = Dimensions.get('window').width;
-
-const getChattingdata = async roomname => {
-  return await fetch(`http://${IPADDR}/chat/get?roomname=${roomname}`, {
-    method: 'GET',
-  })
-    .then(res => res.json())
-    .then(json => {
-      if (json.status) {
-        return json.data;
-      }
-    });
-};
+const pheight = Dimensions.get('window').height;
 
 const getpartnertoken = async (name, firstp, secondp, persons) => {
   // get token and send to partner
@@ -57,6 +47,7 @@ const getDeleteStatusData = (chat, align, id) => {
   let data = {
     ...datadone[idx],
   };
+  let status = '';
   if (align == 'L') {
     // lefter msg
     data = {
@@ -76,9 +67,19 @@ const getDeleteStatusData = (chat, align, id) => {
         ...data,
         deleted: true,
       };
+      status = 'onlydelete';
     }
   }
-  return {idx: idx, data: data};
+  return {idx: idx, data: data, status: status};
+};
+
+const getnickname = async () => {
+  const nickname = await AsyncStorage.getItem('@nickname');
+  let partnernickname = '';
+  if (nickname) {
+    partnernickname = JSON.parse(nickname);
+    return partnernickname;
+  } else return '닉네임';
 };
 
 const Chat = ({navigation, route}) => {
@@ -88,60 +89,26 @@ const Chat = ({navigation, route}) => {
   const [text, setText] = useState('');
   const [chatsplus, setChatsplus] = useState(new Array());
   const [inputh, setInputh] = useState(0);
-  const [partnertoken, setPartnertoken] = useState();
+  const [partnick, setPartnick] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
+  const [chatrange, setChatrange] = useState({start: 0, end: 30});
+  const [chatleft, setChatleft] = useState(true);
   const headerH = useHeaderHeight();
 
-  const deleteChat = (align, id) => {
-    const datas = getDeleteStatusData(chatsplus, align, id);
-    let next = {status: false, id: '', idx: -1};
-    if (datas.idx != 0 && chatsplus[datas.idx].avartar && align == 'L') {
-      const nextavartar = chatsplus
-        .slice(0, datas.idx)
-        .findIndex(e => e.avartar);
-      let nextidx = datas.idx - 1;
-      for (nextidx; nextidx > nextavartar; nextidx--) {
-        if (!chatsplus[nextidx].deletetoleft) {
-          break;
-        }
-      }
-      next.idx = nextidx;
-      next.id = chatsplus[nextidx].uniqueid;
-      next.status = true;
-    }
-    socket.emit('deletechat', {
-      id: id,
-      idx: datas.idx,
-      chatdata: datas.data,
-      roomname: coupledata.roomname,
-      next: next,
+  //////////////////////////////////////useEffect
+  //nickname
+  useEffect(async () => {
+    const nick = await getnickname();
+    setPartnick(nick);
+    navigation.setOptions({
+      headerTitle: nick,
     });
-    setChatsplus(prev => {
-      let newd = prev;
-      newd[datas.idx] = datas.data;
-      if (next.status) {
-        newd[next.idx].avartar = true;
-      }
-      return [...newd];
-    });
-  };
+  }, []);
 
-  const viewChat = id => {
-    const idx = chatsplus.findIndex(e => e.uniqueid == id);
-    socket.emit('viewchat', {id: id, idx: idx, roomname: coupledata.roomname});
-  };
-
-  // when come back from other tabs
+  // when come back from other tabs get data
   useEffect(() => {
     const unsub = navigation.addListener('focus', async () => {
       setChatsplus(await getChattingdata(coupledata.roomname));
-      // save partner's token
-      const token = await getpartnertoken(
-        userdata.name,
-        coupledata.firstp,
-        coupledata.secondp,
-        coupledata.persons,
-      );
-      setPartnertoken(token);
     });
     return unsub;
   }, [navigation]);
@@ -168,7 +135,13 @@ const Chat = ({navigation, route}) => {
         ...prev,
       ]);
     } else {
-      setChatsplus(prev => [data.data, ...prev]);
+      setChatsplus(prev => {
+        let newd = prev;
+        if (data.changeprev) {
+          newd[0].showdate = false;
+        }
+        return [data.data, ...newd];
+      });
     }
   };
 
@@ -221,10 +194,97 @@ const Chat = ({navigation, route}) => {
     return cleanupReturn;
   }, []);
 
+  ///////////////////////////////////////////////methods
+  // if delete chat
+  const deleteChat = (align, id) => {
+    const datas = getDeleteStatusData(chatsplus, align, id);
+    const previdx = datas.idx + 1;
+    const previd = chatsplus[previdx].uniqueid;
+    let next = {status: false, id: '', idx: -1};
+    if (datas.idx != 0 && chatsplus[datas.idx].avartar && align == 'L') {
+      const nextavartar = chatsplus
+        .slice(0, datas.idx)
+        .findIndex(e => e.avartar);
+      let nextidx = datas.idx - 1;
+      for (nextidx; nextidx > nextavartar; nextidx--) {
+        if (!chatsplus[nextidx].deletetoleft) {
+          break;
+        }
+      }
+      next.idx = nextidx;
+      next.id = chatsplus[nextidx].uniqueid;
+      next.status = true;
+    }
+
+    socket.emit('deletechat', {
+      id: id,
+      idx: datas.idx,
+      chatdata: datas.data,
+      roomname: coupledata.roomname,
+      next: next,
+      previd: previd,
+    });
+    setChatsplus(prev => {
+      let newd = prev;
+      newd[datas.idx] = datas.data;
+      if (
+        (datas.data.deletetome || datas.data.deletetoleft) &&
+        datas.data.showdate
+      )
+        newd[previdx].showdate = true;
+      if (next.status) {
+        newd[next.idx].avartar = true;
+      }
+      return [...newd];
+    });
+    if (datas.status == 'onlydelete') {
+    }
+  };
+
+  // if chat rendered in chatlist.js
+  const viewChat = id => {
+    const idx = chatsplus.findIndex(e => e.uniqueid == id);
+    socket.emit('viewchat', {id: id, idx: idx, roomname: coupledata.roomname});
+  };
+
+  // scroll to get more data
+  const scrollTogetMorechats = async e => {
+    const yoffset = e.nativeEvent.contentOffset.y;
+    const boundary = (e.nativeEvent.contentSize.height - pheight) * 0.6;
+    if (yoffset > boundary && chatleft && !refreshing) {
+      setRefreshing(true);
+      console.log('refreshing');
+      setChatsplus([
+        ...chatsplus,
+        ...(await getChattingdata(coupledata.roomname)),
+      ]);
+    }
+  };
+
+  //get data
+  const getChattingdata = async roomname => {
+    return await fetch(
+      `http://${IPADDR}/chat/get?roomname=${roomname}&start=${chatrange.start}&end=${chatrange.end}`,
+      {
+        method: 'GET',
+      },
+    )
+      .then(res => res.json())
+      .then(json => {
+        if (json.status) {
+          setChatleft(json.more);
+          setChatrange({start: chatrange.start + 30, end: chatrange.end + 30});
+          setRefreshing(false);
+          console.log(json.data.length, chatrange.start, chatrange.end);
+          return json.data;
+        }
+      });
+  };
+
   // send data to the certain room which includes current user.
-  const _socketsend = () => {
+  const _socketsend = async () => {
     Keyboard.dismiss();
-    if (text.length != 0) {
+    if (text.trim().length != 0) {
       let data = {
         txt: text,
         sender: userdata.id,
@@ -235,6 +295,9 @@ const Chat = ({navigation, route}) => {
         deleted: false,
         deletetome: false,
         deletetoleft: false,
+        showdate: true,
+        prevdate: false,
+        messageid: '',
       };
 
       if (socket.connected) {
@@ -242,10 +305,27 @@ const Chat = ({navigation, route}) => {
         if (chatsplus.length != 0) {
           const lastdata = chatsplus[0];
           const avartarS = lastdata.sender != data.sender ? true : false;
-          const avartarT = data.time - lastdata.time > 60000 ? true : false;
+          const avartarT =
+            new Date(data.time).getMinutes() !=
+            new Date(lastdata.time).getMinutes()
+              ? true
+              : false;
           data = {
             ...data,
             avartar: avartarT || avartarS,
+          };
+        }
+
+        if (chatsplus.length != 0) {
+          const senderequal = chatsplus[0].sender == data.sender ? true : false;
+          const timechange =
+            new Date(data.time).getMinutes() !=
+            new Date(chatsplus[0].time).getMinutes()
+              ? false
+              : true;
+          data = {
+            ...data,
+            prevdate: timechange && senderequal,
           };
         }
 
@@ -267,26 +347,6 @@ const Chat = ({navigation, route}) => {
           dateid: dateid,
         });
 
-        // send notification to partner
-        if (partnertoken)
-          sendPushNotification([partnertoken], userdata.name, text, {
-            type: 'chat',
-            data,
-          });
-        else {
-          const token = getpartnertoken(
-            userdata.name,
-            coupledata.firstp,
-            coupledata.secondp,
-            coupledata.persons,
-          );
-          setPartnertoken(token);
-          sendPushNotification([token], userdata.name, text, {
-            type: 'chat',
-            data,
-          });
-        }
-
         if (showdatebar) {
           const datebar = {
             date: data.time,
@@ -295,8 +355,29 @@ const Chat = ({navigation, route}) => {
           };
           setChatsplus(prev => [data, datebar, ...prev]);
         } else {
-          setChatsplus(prev => [data, ...prev]);
+          setChatsplus(prev => {
+            let newd = prev;
+            if (data.prevdate) {
+              newd[0].showdate = false;
+            }
+            return [data, ...newd];
+          });
         }
+        //scroll to bottom
+        chatScrollRef.current.scrollToOffset({animated: false, offset: 0});
+
+        const token = await getpartnertoken(
+          userdata.name,
+          coupledata.firstp,
+          coupledata.secondp,
+          coupledata.persons,
+        );
+
+        sendPushNotification([token], userdata.name, text, {
+          type: 'chat',
+          data,
+        });
+
         setText('');
       } else {
         alert('네트워크 연결 확인 후 다시 전송해주세요');
@@ -312,10 +393,16 @@ const Chat = ({navigation, route}) => {
         ref={chatScrollRef}
         style={styles.chatScroll}
         data={chatsplus}
-        onContentSizeChange={(w, h) => {
-          // chatScrollRef.current.scrollToOffset({animated: false, offset: 0});
-        }}
         inverted
+        // onScroll={e => {
+        //   if (
+        //     e.nativeEvent.contentOffset.y >
+        //     (e.nativeEvent.contentSize.height - pheight) * 0.8
+        //   ) {
+        //     console.log('refresh');
+        //   }
+        // }}
+        onScroll={scrollTogetMorechats}
         renderItem={chat => (
           <ChatListView
             chat={chat}
@@ -323,6 +410,9 @@ const Chat = ({navigation, route}) => {
             coupledata={coupledata}
             deleteChat={deleteChat}
             viewChat={viewChat}
+            partnick={partnick}
+            lastidx={chatsplus.length - 1}
+            moredata={chatleft}
           />
         )}
         keyExtractor={item => item.uniqueid}
@@ -365,12 +455,13 @@ const styles = StyleSheet.create({
   main: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: '#dfcccf',
+    backgroundColor: '#4a4a4a',
+    // backgroundColor: '#dfcccf',
   },
   headerback: {
     position: 'absolute',
     width: pwidth,
-    backgroundColor: '#7a7a7a7a',
+    backgroundColor: '#444a',
     zIndex: 1,
   },
   chatScroll: {

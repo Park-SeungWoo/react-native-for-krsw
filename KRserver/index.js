@@ -10,7 +10,6 @@ console.log('socket connection prepared!');
 
 /////////////////////for chats
 const chatting = require('./schemas/chat');
-let Chats = mongoose.model('chat');
 /////////////////////
 
 // connect to mongodb server
@@ -49,10 +48,10 @@ io.on('connection', socket => {
   socket.on('c2smsg', data => {
     // if changed date
     if (data.showdatebar) {
-      const datequery = {
+      const datebarquery = {
         roomname: data.name,
       };
-      const dateaddquery = {
+      const datebaraddquery = {
         $push: {
           chat: {
             $each: [
@@ -66,7 +65,25 @@ io.on('connection', socket => {
           },
         },
       };
-      chatting.updateOne(datequery, dateaddquery, (err, res) => []);
+      chatting.updateOne(datebarquery, datebaraddquery, (err, res) => {
+        console.log(`add chat : add date bar : ${JSON.stringify(res)}`);
+      });
+    }
+
+    if (data.data.prevdate) {
+      const datequery = {
+        roomname: data.name,
+      };
+      const dateupdatequery = {
+        $set: {
+          'chat.0.showdate': false,
+        },
+      };
+      chatting.updateOne(datequery, dateupdatequery, (err, res) => {
+        console.log(
+          `addchat : prevchat.showdate = false : ${JSON.stringify(res)}`,
+        );
+      });
     }
 
     // add chat
@@ -77,19 +94,37 @@ io.on('connection', socket => {
       $push: {chat: {$each: [data.data], $position: 0}},
     };
     chatting.updateOne(query, updatequery, (err, res) => {
+      console.log(`addchat : ${JSON.stringify(res)}`);
       if (!err)
         socket.to(data.name).emit('s2cmsg', {
           data: data.data,
           showdatebar: data.showdatebar,
           dateid: data.dateid,
+          changeprev: data.data.prevdate,
         });
     });
   });
 
   socket.on('deletechat', data => {
-    const {id, chatdata, roomname, idx, next} = data;
+    const {id, chatdata, roomname, idx, next, previd} = data;
     socket.to(roomname).emit('deleted', {data: chatdata, idx: idx});
     // change in db
+    if ((chatdata.deletetome || chatdata.deletetoleft) && chatdata.showdate) {
+      const changequery = {
+        roomname: roomname,
+        'chat.uniqueid': previd,
+      };
+      const changeprevdatequery = {
+        $set: {
+          'chat.$.showdate': true,
+        },
+      };
+      chatting.updateOne(changequery, changeprevdatequery, (err, res) => {
+        console.log(
+          `delete : prevchat.showdate = true : ${JSON.stringify(res)}`,
+        );
+      });
+    }
     const query = {
       roomname: roomname,
       'chat.uniqueid': id,
@@ -115,7 +150,7 @@ io.on('connection', socket => {
         },
       };
       chatting.updateOne(nextquery, nextupdatequery, (err, res) => {
-        console.log('nextavartar : ' + JSON.stringify(res));
+        console.log('delete : nextavartar : ' + JSON.stringify(res));
       });
     }
   });
@@ -132,7 +167,9 @@ io.on('connection', socket => {
         'chat.$.view': 0,
       },
     };
-    chatting.updateOne(query, updatequery, (err, res) => {});
+    chatting.updateOne(query, updatequery, (err, res) => {
+      console.log(`viewchat : ${JSON.stringify(res)}`);
+    });
   });
 
   socket.on('disconnect', reason => {

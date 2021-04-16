@@ -946,6 +946,11 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
+"@notifee/react-native@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@notifee/react-native/-/react-native-1.4.0.tgz#667429868c25647e42ff1bb675793f05f27bfb9f"
+  integrity sha512-elF+2ScoC3ULlJ4+FafN3CMBd6fadRDUFSh3tmuta5Vgdr5nfYgJmn8tP32kUDAb4h/cMbmGg4yfUCd6+5BGQQ==
+
 "@react-native-async-storage/async-storage@^1.15.1":
   version "1.15.1"
   resolved "https://registry.yarnpkg.com/@react-native-async-storage/async-storage/-/async-storage-1.15.1.tgz#9b26c32af6640d2d1f84862657825f75672bfa6b"

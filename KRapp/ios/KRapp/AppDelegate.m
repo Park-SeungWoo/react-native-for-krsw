@@ -54,6 +54,13 @@ static void InitializeFlipper(UIApplication *application) {
   return YES;
 }
 
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+// delete the badge
+   [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+// delete the notifications
+  [[UNUserNotificationCenter currentNotificationCenter] removeAllDeliveredNotifications];
+}
+
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
 #if DEBUG

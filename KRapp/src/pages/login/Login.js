@@ -33,7 +33,18 @@ const Login = ({navigation, route}) => {
         const coupleinfo = await AsyncStorage.getItem('@CoupleInfo');
         // check couple data
         if (coupleinfo != null) {
-          const coupledata = JSON.parse(coupleinfo);
+          const coupledata = await JSON.parse(coupleinfo);
+          // save partner's nickname
+          const partner = await AsyncStorage.getItem('@nickname');
+          if (!partner) {
+            const idx = coupledata.persons.findIndex(
+              e => e == data.userdata.id,
+            );
+            const nick = idx
+              ? JSON.stringify(coupledata.firstp)
+              : JSON.stringify(coupledata.secondp);
+            await AsyncStorage.setItem('@nickname', nick);
+          }
           navigation.navigate('Main', {
             screen: 'Home',
             params: {

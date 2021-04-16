@@ -28,7 +28,11 @@ const Stack = createStackNavigator();
 // notification permission
 async function requestUserPermission() {
   // const authStatus =
-  await messaging().requestPermission();
+  await messaging().requestPermission({
+    alert: true,
+    badge: true,
+    sound: true,
+  });
   // const enabled =
   //   authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
   //   authStatus === messaging.AuthorizationStatus.PROVISIONAL;
@@ -124,6 +128,7 @@ const App = () => {
             options={{
               headerTransparent: true,
               headerBackTitleVisible: false,
+              headerTintColor: '#f1f1f1',
             }}
           />
         </Stack.Navigator>
