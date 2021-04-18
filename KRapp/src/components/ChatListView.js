@@ -75,7 +75,10 @@ const ChatListView = ({
           const chathour = new Date(chat.item.time).getHours();
           if (curhour == chathour) {
             if (curmin - chatmin > 10) {
-              alert('10분이 초과하여 메시지를 삭제할 수 없습니다.');
+              Alert.alert(
+                '삭제 실패',
+                '10분이 초과하여 메시지를 삭제할 수 없습니다.',
+              );
             } else {
               // can delete
               deleteChat(align, chat.item.uniqueid);
@@ -85,7 +88,10 @@ const ChatListView = ({
               // can delete
               deleteChat(align, chat.item.uniqueid);
             } else {
-              alert('10분이 초과하여 메시지를 삭제할 수 없습니다.');
+              Alert.alert(
+                '삭제 실패',
+                '10분이 초과하여 메시지를 삭제할 수 없습니다.',
+              );
             }
           }
         }

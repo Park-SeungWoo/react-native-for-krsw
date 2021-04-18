@@ -9,6 +9,7 @@ import {
   Dimensions,
   TouchableWithoutFeedback,
   Appearance,
+  Alert,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -259,9 +260,9 @@ const Register = ({navigation, route}) => {
       .then(res => res.json())
       .then(json => {
         if (json.access) {
-          alert('계정 생성 성공!');
+          Alert.alert('성공', '계정 생성 성공!');
           navigation.goBack();
-        } else alert('계정 생성 실패!');
+        } else Alert.alert('성공', '계정 생성 실패!');
       });
   };
 

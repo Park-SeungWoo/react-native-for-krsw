@@ -7,8 +7,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  Keyboard,
-  InputAccessoryView,
+  Alert,
 } from 'react-native';
 import {IPADDR} from '../../../../env.json';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -82,7 +81,7 @@ const ChangePw = ({navigation, route}) => {
       .then(res => res.json())
       .then(json => {
         if (json.access) {
-          alert(`비밀번호가 ${pw.text}로 변경되었습니다.`);
+          Alert.alert('성공', `비밀번호가 ${pw.text}로 변경되었습니다.`);
           navigation.dispatch(
             CommonActions.reset({
               index: 0,

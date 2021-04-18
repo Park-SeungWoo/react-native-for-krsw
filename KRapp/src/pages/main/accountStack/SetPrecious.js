@@ -102,7 +102,7 @@ const SetPrecious = ({navigation, route}) => {
           );
         } else if (typeof json == 'string') {
           // err
-          alert(json);
+          alert('앱을 다시 다운해주세요.');
         } else {
           fetch(`http://${IPADDR}/couple/reqorres?id=${id}`)
             .then(res => res.json())
@@ -180,7 +180,7 @@ const SetPrecious = ({navigation, route}) => {
                   );
                 }
               } else {
-                alert(json.data);
+                alert('다시 시도해주세요');
               }
             });
         } else {

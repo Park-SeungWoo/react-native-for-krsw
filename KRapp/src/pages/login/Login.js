@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Appearance,
+  Alert,
 } from 'react-native';
 import {IPADDR} from '../../../env.json';
 import messaging from '@react-native-firebase/messaging';
@@ -124,8 +125,8 @@ const Login = ({navigation, route}) => {
         });
       }
     } else {
-      if (data.iderr) alert('존재하지 않는 아이디입니다.');
-      else alert('비밀번호를 다시 한번 확인해주세요.');
+      if (data.iderr) Alert.alert('로그인 실패', '존재하지 않는 아이디입니다.');
+      else Alert.alert('로그인 실패', '비밀번호를 다시 한번 확인해주세요.');
     }
   };
 

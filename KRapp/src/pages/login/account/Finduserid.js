@@ -6,6 +6,7 @@ import {
   TextInput,
   Text,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import {CommonActions} from '@react-navigation/native';
 import {IPADDR} from '../../../../env.json';
@@ -55,7 +56,7 @@ const Finduserid = ({navigation, route}) => {
       .then(res => res.json())
       .then(json => {
         if (json) {
-          alert(`${email.text}로 아이디를 확인해주세요.`);
+          Alert.alert('메일 전송', `${email.text}로 아이디를 확인해주세요.`);
           navigation.dispatch(
             CommonActions.reset({
               index: 0,

@@ -401,14 +401,13 @@ const Chat = ({navigation, route}) => {
 
         setText('');
       } else {
-        alert('네트워크 연결 확인 후 다시 전송해주세요');
+        Alert.alert('전송 실패', '네트워크 연결 확인 후 다시 전송해주세요');
       }
     }
   };
 
   const setReservedMessage = () => {
     Keyboard.dismiss();
-    // alert('reserved!');
     modalRef.current.setVisibility(true);
     setModalopened(true);
   };
@@ -425,7 +424,7 @@ const Chat = ({navigation, route}) => {
           break;
       }
     else {
-      alert('먼저 내용을 추가해주세요!');
+      Alert.alert('전송 실패', '먼저 내용을 추가해주세요!');
       setText('');
     }
   };
