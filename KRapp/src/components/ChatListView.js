@@ -6,6 +6,8 @@ import {
   Text,
   Dimensions,
   TouchableOpacity,
+  PlatformColor,
+  Alert,
 } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Popoverview from 'react-native-popover-view';
@@ -43,8 +45,8 @@ const ChatListView = ({
     let mtemp = new Date(chat.item.time).toString().split(':')[1];
     const h = htemp > 12 ? htemp - 12 : htemp;
     const m = mtemp;
-    const timestatus = htemp > 12 ? 'Pm' : 'Am';
-    datetxt = `${h}:${m} ${timestatus}`;
+    const timestatus = htemp > 11 ? 'Pm' : 'Am';
+    datetxt = `${h || 12}:${m} ${timestatus}`;
   }
 
   useEffect(() => {
@@ -60,32 +62,36 @@ const ChatListView = ({
   };
 
   const _deleteMessage = align => {
-    if (align == 'L') {
-      deleteChat(align, chat.item.uniqueid);
-    } else {
-      if (chat.item.deleted) {
+    if (!chat.item.reserved) {
+      if (align == 'L') {
         deleteChat(align, chat.item.uniqueid);
       } else {
-        const curmin = new Date(Date.now()).getMinutes();
-        const curhour = new Date(Date.now()).getHours();
-        const chatmin = new Date(chat.item.time).getMinutes();
-        const chathour = new Date(chat.item.time).getHours();
-        if (curhour == chathour) {
-          if (curmin - chatmin > 10) {
-            alert('10분이 초과하여 메시지를 삭제할 수 없습니다.');
-          } else {
-            // can delete
-            deleteChat(align, chat.item.uniqueid);
-          }
+        if (chat.item.deleted) {
+          deleteChat(align, chat.item.uniqueid);
         } else {
-          if (50 <= chatmin - curmin) {
-            // can delete
-            deleteChat(align, chat.item.uniqueid);
+          const curmin = new Date(Date.now()).getMinutes();
+          const curhour = new Date(Date.now()).getHours();
+          const chatmin = new Date(chat.item.time).getMinutes();
+          const chathour = new Date(chat.item.time).getHours();
+          if (curhour == chathour) {
+            if (curmin - chatmin > 10) {
+              alert('10분이 초과하여 메시지를 삭제할 수 없습니다.');
+            } else {
+              // can delete
+              deleteChat(align, chat.item.uniqueid);
+            }
           } else {
-            alert('10분이 초과하여 메시지를 삭제할 수 없습니다.');
+            if (50 <= chatmin - curmin) {
+              // can delete
+              deleteChat(align, chat.item.uniqueid);
+            } else {
+              alert('10분이 초과하여 메시지를 삭제할 수 없습니다.');
+            }
           }
         }
       }
+    } else {
+      Alert.alert('삭제 실패', '예약된 메시지는 삭제할 수 없습니다.');
     }
     setShowpopover(false);
   };
@@ -152,7 +158,17 @@ const ChatListView = ({
                     </Text>
                   </View>
                 </TouchableOpacity>
-                <Text style={styles.datetxt}>{datetxt}</Text>
+                <View style={styles.additionalinfo}>
+                  <Text
+                    style={{
+                      ...styles.datetxt,
+                      alignSelf: 'flex-start',
+                      color: PlatformColor('systemBlue'),
+                    }}>
+                    {chat.item.reserved ? 'r' : null}
+                  </Text>
+                  <Text style={styles.datetxt}>{datetxt}</Text>
+                </View>
               </View>
             )
           ) : // right text
@@ -164,7 +180,14 @@ const ChatListView = ({
                   : styles.LRwraper
               }>
               <View style={styles.additionalinfo}>
-                <Text style={styles.seentxt}>{chat.item.view || null}</Text>
+                <Text
+                  style={
+                    chat.item.view
+                      ? styles.seentxt
+                      : {...styles.seentxt, color: PlatformColor('systemBlue')}
+                  }>
+                  {chat.item.reserved ? 'r' : chat.item.view || null}
+                </Text>
                 <Text style={styles.datetxt}>{datetxt}</Text>
               </View>
               <TouchableOpacity

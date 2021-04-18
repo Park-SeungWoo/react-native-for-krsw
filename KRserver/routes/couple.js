@@ -91,6 +91,7 @@ router.post('/addrelation', (req, res, next) => {
     secondp: secondp,
     startdate: startdate,
     roomname: roomname,
+    nicknames: [firstp, secondp],
   });
   const chatting = new Chats({
     roomname: roomname,

@@ -5,10 +5,13 @@ import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
   FlatList,
   Dimensions,
   Keyboard,
+  PlatformColor,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
 } from 'react-native';
 import {useHeaderHeight} from '@react-navigation/stack';
 import {io} from 'socket.io-client';
@@ -17,9 +20,13 @@ import 'react-native-get-random-values'; // for nanoid
 import {nanoid} from 'nanoid'; // to make unique id
 import {SafeAreaView} from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+// import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {ModalView} from 'react-native-ios-modal';
+import {ContextMenuButton} from 'react-native-ios-context-menu';
 import sendPushNotification from '../../methods/sendPushNotification';
 import {IPADDR} from '../../../env.json';
 import ChatListView from '../../components/ChatListView';
+import ModalNestedView from '../../components/ModalNestedView';
 
 const isDarkmode = Appearance.getColorScheme() == 'dark';
 const socket = io(`ws://${IPADDR}`);
@@ -73,32 +80,33 @@ const getDeleteStatusData = (chat, align, id) => {
   return {idx: idx, data: data, status: status};
 };
 
-const getnickname = async () => {
-  const nickname = await AsyncStorage.getItem('@nickname');
-  let partnernickname = '';
-  if (nickname) {
-    partnernickname = JSON.parse(nickname);
-    return partnernickname;
-  } else return '닉네임';
-};
-
 const Chat = ({navigation, route}) => {
   const {userdata, coupledata} = route.params;
 
-  const chatScrollRef = useRef();
   const [text, setText] = useState('');
   const [chatsplus, setChatsplus] = useState(new Array());
   const [inputh, setInputh] = useState(0);
   const [partnick, setPartnick] = useState('');
+  const [partID, setPartID] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [chatrange, setChatrange] = useState({start: 0, end: 30});
   const [chatleft, setChatleft] = useState(true);
+  const [modalopened, setModalopened] = useState(false);
   const headerH = useHeaderHeight();
+  const modalRef = useRef();
+  const chatScrollRef = useRef();
 
   //////////////////////////////////////useEffect
+  // partnet's id
+  useEffect(() => {
+    const idx = userdata.name == coupledata.firstp ? 1 : 0;
+    const pid = coupledata.persons[idx];
+    setPartID(pid);
+  }, []);
+
   //nickname
-  useEffect(async () => {
-    const nick = await getnickname();
+  useEffect(() => {
+    const nick = getPartnerNick();
     setPartnick(nick);
     navigation.setOptions({
       headerTitle: nick,
@@ -195,6 +203,19 @@ const Chat = ({navigation, route}) => {
   }, []);
 
   ///////////////////////////////////////////////methods
+  // get partner'snickname
+  const getPartnerNick = () => {
+    return coupledata.firstp == userdata.name
+      ? coupledata.nicknames[1]
+      : coupledata.nicknames[0];
+  };
+
+  const getMyNick = () => {
+    return coupledata.firstp == userdata.name
+      ? coupledata.nicknames[0]
+      : coupledata.nicknames[1];
+  };
+
   // if delete chat
   const deleteChat = (align, id) => {
     const datas = getDeleteStatusData(chatsplus, align, id);
@@ -253,7 +274,6 @@ const Chat = ({navigation, route}) => {
     const boundary = (e.nativeEvent.contentSize.height - pheight) * 0.6;
     if (yoffset > boundary && chatleft && !refreshing) {
       setRefreshing(true);
-      console.log('refreshing');
       setChatsplus([
         ...chatsplus,
         ...(await getChattingdata(coupledata.roomname)),
@@ -275,18 +295,17 @@ const Chat = ({navigation, route}) => {
           setChatleft(json.more);
           setChatrange({start: chatrange.start + 30, end: chatrange.end + 30});
           setRefreshing(false);
-          console.log(json.data.length, chatrange.start, chatrange.end);
           return json.data;
         }
       });
   };
 
   // send data to the certain room which includes current user.
-  const _socketsend = async () => {
+  const sendDirectMessage = async () => {
     Keyboard.dismiss();
     if (text.trim().length != 0) {
       let data = {
-        txt: text,
+        txt: text.trim(),
         sender: userdata.id,
         time: Date.now(),
         uniqueid: nanoid(),
@@ -297,7 +316,7 @@ const Chat = ({navigation, route}) => {
         deletetoleft: false,
         showdate: true,
         prevdate: false,
-        messageid: '',
+        reserved: false,
       };
 
       if (socket.connected) {
@@ -316,6 +335,7 @@ const Chat = ({navigation, route}) => {
           };
         }
 
+        // show time status next to chat bubble
         if (chatsplus.length != 0) {
           const senderequal = chatsplus[0].sender == data.sender ? true : false;
           const timechange =
@@ -345,6 +365,7 @@ const Chat = ({navigation, route}) => {
           data,
           showdatebar: showdatebar,
           dateid: dateid,
+          reserved: false,
         });
 
         if (showdatebar) {
@@ -373,7 +394,7 @@ const Chat = ({navigation, route}) => {
           coupledata.persons,
         );
 
-        sendPushNotification([token], userdata.name, text, {
+        sendPushNotification([token], getMyNick(), text, {
           type: 'chat',
           data,
         });
@@ -385,6 +406,88 @@ const Chat = ({navigation, route}) => {
     }
   };
 
+  const setReservedMessage = () => {
+    Keyboard.dismiss();
+    // alert('reserved!');
+    modalRef.current.setVisibility(true);
+    setModalopened(true);
+  };
+
+  // 2 send options
+  const selectSendOption = ({nativeEvent}) => {
+    if (text.trim().length != 0)
+      switch (nativeEvent.actionKey) {
+        case 'direct':
+          sendDirectMessage();
+          break;
+        case 'reserve':
+          setReservedMessage();
+          break;
+      }
+    else {
+      alert('먼저 내용을 추가해주세요!');
+      setText('');
+    }
+  };
+
+  const modalClose = reservedate => {
+    Alert.alert('예약 전송', '현재 정보로 예약 메시지를 등록하시겠습니까?', [
+      {
+        text: '취소',
+        onPress: () => {},
+        style: 'cancel',
+      },
+      {
+        text: '등록',
+        onPress: async () => {
+          modalRef.current.setVisibility(false);
+          setMessageToServer({
+            date: reservedate,
+            toid: partID,
+            fromid: userdata.id,
+            fromname: getMyNick(),
+            content: text,
+            roomname: coupledata.roomname,
+          });
+          setText('');
+        },
+      },
+    ]);
+  };
+
+  const setMessageToServer = msgdata => {
+    const {date, fromid, content, toid, fromname, roomname} = msgdata;
+    const data = {
+      txt: content.trim(),
+      sender: fromid,
+      time: date,
+      uniqueid: nanoid(),
+      view: 1,
+      avartar: true,
+      deleted: false,
+      deletetome: false,
+      deletetoleft: false,
+      showdate: true,
+      prevdate: false,
+    };
+    const option = {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      body: JSON.stringify({
+        data: data,
+        ToId: toid,
+        fromname: fromname,
+        fromdate: Date.now(),
+        roomname: roomname,
+        reserveid: nanoid(),
+      }),
+    };
+    fetch(`http://${IPADDR}/reserved/set`, option);
+  };
+
   const renderChats = panHandlers => {
     return (
       <FlatList
@@ -394,14 +497,7 @@ const Chat = ({navigation, route}) => {
         style={styles.chatScroll}
         data={chatsplus}
         inverted
-        // onScroll={e => {
-        //   if (
-        //     e.nativeEvent.contentOffset.y >
-        //     (e.nativeEvent.contentSize.height - pheight) * 0.8
-        //   ) {
-        //     console.log('refresh');
-        //   }
-        // }}
+        scrollEnabled={!refreshing}
         onScroll={scrollTogetMorechats}
         renderItem={chat => (
           <ChatListView
@@ -422,7 +518,17 @@ const Chat = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.main} edges={['bottom']}>
-      <View style={{...styles.headerback, height: headerH}} />
+      <SafeAreaView style={{...styles.headerback, height: headerH}}>
+        {/* <View style={styles.menuV}>
+          <TouchableOpacity>
+            <MaterialCommunityIcons
+              name={'dots-horizontal'}
+              size={33}
+              color={'#f1f1f1'}
+            />
+          </TouchableOpacity>
+        </View> */}
+      </SafeAreaView>
       <KeyboardAccessoryView
         renderScrollable={renderChats}
         style={{backgroundColor: '#afafaf'}}>
@@ -442,11 +548,55 @@ const Chat = ({navigation, route}) => {
               }}
             />
           </View>
-          <TouchableOpacity style={styles.send} onPress={_socketsend}>
-            <Text style={styles.txt}>chat</Text>
-          </TouchableOpacity>
+          <ContextMenuButton
+            style={styles.send}
+            onPress={sendDirectMessage}
+            onPressMenuItem={selectSendOption}
+            wrapNativeComponent={true}
+            activeOpacity={0.4}
+            menuConfig={{
+              menuTitle: '전송',
+              menuItems: [
+                {
+                  actionKey: 'reserve',
+                  actionTitle: '예약 전송',
+                  icon: {
+                    iconType: 'SYSTEM',
+                    iconValue: 'alarm',
+                  },
+                },
+                {
+                  actionKey: 'direct',
+                  actionTitle: '전송',
+                  icon: {
+                    iconType: 'SYSTEM',
+                    iconValue: 'arrow.up.message',
+                  },
+                },
+              ],
+            }}>
+            <Text style={styles.sendtxt}>전송</Text>
+          </ContextMenuButton>
         </View>
       </KeyboardAccessoryView>
+
+      {/* modal */}
+      <ModalView
+        ref={modalRef}
+        onModalBlur={() => {
+          setModalopened(false);
+        }}
+        onModalWillDismiss={() => {
+          setModalopened(false);
+        }}>
+        <ModalNestedView
+          partnick={partnick}
+          name={userdata.name}
+          text={text}
+          opened={modalopened}
+          modalClose={modalClose}
+        />
+      </ModalView>
     </SafeAreaView>
   );
 };
@@ -456,13 +606,21 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     backgroundColor: '#4a4a4a',
-    // backgroundColor: '#dfcccf',
   },
   headerback: {
     position: 'absolute',
     width: pwidth,
     backgroundColor: '#444a',
     zIndex: 1,
+  },
+  menuV: {
+    width: 45,
+    height: 45,
+    alignItems: 'center',
+    justifyContent: 'center',
+    bottom: 0,
+    right: 0,
+    position: 'absolute',
   },
   chatScroll: {
     width: pwidth,
@@ -498,13 +656,16 @@ const styles = StyleSheet.create({
     width: '10%',
     height: 35,
     alignItems: 'center',
-    justifyContent: 'center',
+    // justifyContent: 'center',
+    flexDirection: 'row',
     backgroundColor: '#faafaf',
     borderRadius: 10,
   },
-  txt: {
+  sendtxt: {
     fontSize: 20,
     color: isDarkmode ? '#f1f1f1' : 'black',
+    width: '100%',
+    textAlign: 'center',
   },
 });
 

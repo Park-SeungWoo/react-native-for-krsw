@@ -91,6 +91,7 @@ const acceptCoupleRequest = ({navigation, route}) => {
       secondp: relation.reqname,
       startdate: new Date(relation.startdate),
       roomname: `${relation.resid}_${relation.reqid}`,
+      nicknames: [relation.resname, relation.reqname],
     };
     const option = {
       method: 'POST',

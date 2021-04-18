@@ -13,6 +13,8 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		612CD3A5565EA06D8149D1D0 /* libPods-KRapp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60D61BC1C74EDB20E077DD42 /* libPods-KRapp.a */; };
 		6916E3862620BA0A0054D5AD /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6916E3852620BA0A0054D5AD /* GoogleService-Info.plist */; };
+		695FC323262B3CD100F94E23 /* to_get_ocj_c_to_swift_bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 695FC322262B3CD100F94E23 /* to_get_ocj_c_to_swift_bridge.swift */; };
+		695FC324262B3CD100F94E23 /* to_get_ocj_c_to_swift_bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 695FC322262B3CD100F94E23 /* to_get_ocj_c_to_swift_bridge.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		A95517BCCF47313175574FAD /* libPods-KRapp-KRappTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1386F3AA44F16A34AF7254EC /* libPods-KRapp-KRappTests.a */; };
 /* End PBXBuildFile section */
@@ -42,6 +44,9 @@
 		6236C0FB46DC31DB056FF6E0 /* Pods-KRapp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KRapp.debug.xcconfig"; path = "Target Support Files/Pods-KRapp/Pods-KRapp.debug.xcconfig"; sourceTree = "<group>"; };
 		6916E3852620BA0A0054D5AD /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6916E65F2620C8330054D5AD /* KRapp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = KRapp.entitlements; path = KRapp/KRapp.entitlements; sourceTree = "<group>"; };
+		695FC320262B3CD100F94E23 /* KRapp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "KRapp-Bridging-Header.h"; sourceTree = "<group>"; };
+		695FC321262B3CD100F94E23 /* KRappTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "KRappTests-Bridging-Header.h"; sourceTree = "<group>"; };
+		695FC322262B3CD100F94E23 /* to_get_ocj_c_to_swift_bridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = to_get_ocj_c_to_swift_bridge.swift; sourceTree = "<group>"; };
 		81879329B46B40441FA08656 /* Pods-KRapp-KRappTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KRapp-KRappTests.release.xcconfig"; path = "Target Support Files/Pods-KRapp-KRappTests/Pods-KRapp-KRappTests.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = KRapp/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A37343D972141DCB48AE7127 /* Pods-KRapp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KRapp.release.xcconfig"; path = "Target Support Files/Pods-KRapp/Pods-KRapp.release.xcconfig"; sourceTree = "<group>"; };
@@ -97,6 +102,9 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				695FC322262B3CD100F94E23 /* to_get_ocj_c_to_swift_bridge.swift */,
+				695FC320262B3CD100F94E23 /* KRapp-Bridging-Header.h */,
+				695FC321262B3CD100F94E23 /* KRappTests-Bridging-Header.h */,
 			);
 			name = KRapp;
 			sourceTree = "<group>";
@@ -211,10 +219,11 @@
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
+						LastSwiftMigration = 1240;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						LastSwiftMigration = 1120;
+						LastSwiftMigration = 1240;
 					};
 				};
 			};
@@ -430,6 +439,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				695FC324262B3CD100F94E23 /* to_get_ocj_c_to_swift_bridge.swift in Sources */,
 				00E356F31AD99517003FC87E /* KRappTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -439,6 +449,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
+				695FC323262B3CD100F94E23 /* to_get_ocj_c_to_swift_bridge.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -458,7 +469,9 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = CC01C32736934508F08E3E6C /* Pods-KRapp-KRappTests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -477,6 +490,9 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "KRappTests-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KRapp.app/KRapp";
 			};
 			name = Debug;
@@ -485,7 +501,9 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 81879329B46B40441FA08656 /* Pods-KRapp-KRappTests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = KRappTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
@@ -501,6 +519,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "KRappTests-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KRapp.app/KRapp";
 			};
 			name = Release;
@@ -527,6 +547,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = KRapp;
+				SWIFT_OBJC_BRIDGING_HEADER = "KRapp-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -554,6 +575,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = KRapp;
+				SWIFT_OBJC_BRIDGING_HEADER = "KRapp-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -562,6 +584,7 @@
 		83CBBA201A601CBA00E9B192 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -615,7 +638,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
-					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",
+					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.3/$(PLATFORM_NAME)\"",
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -627,6 +650,7 @@
 		83CBBA211A601CBA00E9B192 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -673,7 +697,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
-					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",
+					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.3/$(PLATFORM_NAME)\"",
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;

@@ -1,31 +1,35 @@
 const mongoose = require('mongoose');
 const {Schema} = mongoose;
 
-const relationSchema = new Schema({
-  persons: {
-    type: Array,
-    require: true,
-  },
-  firstp: {
+const reservedmsg = new Schema({
+  toid: {
     type: String,
     require: true,
   },
-  secondp: {
+  data: {
+    type: Object,
+    require: true,
+  },
+  fromname: {
     type: String,
     require: true,
   },
-  startdate: {
+  fromdate: {
     type: Date,
+    require: true,
+  },
+  sent: {
+    type: Boolean,
     require: true,
   },
   roomname: {
     type: String,
     require: true,
   },
-  micknames: {
-    type: Array,
+  reserveid: {
+    type: String,
     require: true,
   },
 });
 
-module.exports = mongoose.model('relation', relationSchema);
+module.exports = mongoose.model('reservedmsg', reservedmsg);
