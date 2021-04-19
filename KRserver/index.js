@@ -74,15 +74,19 @@ app.use('/couple', couple);
 app.use('/chat', chat);
 app.use('/reserved', reserved);
 
+app.get('/', (req, res) => {
+  res.send('hello ec2!');
+});
+
 // err handling
 app.use(function (err, req, res, next) {
   res.json({mes: err.message});
 });
 
 // listen
-server.listen(process.env.PORT || 3000, process.env.HOST, () => {
+server.listen(process.env.PORT || 3000, () => {
   console.log(
-    `Server is listening at ${process.env.HOST}:${process.env.PORT || 3000}`,
+    `Server is listening at ${process.env.DEVHOST}:${process.env.PORT || 3000}`,
   );
 });
 
