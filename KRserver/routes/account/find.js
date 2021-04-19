@@ -34,6 +34,8 @@ router.get('/findid', (req, res, next) => {
       // send user id to user's email
       const transporter = nodemailer.createTransport({
         service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 465,
         auth: {
           user: EMAIL,
           pass: EMAILPW,
