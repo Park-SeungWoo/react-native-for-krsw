@@ -192,24 +192,9 @@ router.post('/addimage', uploadimg.single('img'), (req, res) => {
   const findq = {
     albumid: albumid,
   };
-  //   album.find(findq, (err, adata) => {
-  //     let albumD = adata[0];
-  //     let adatai = albumD.albums[albumid];
-  //     if (adatai.images.length == 0) {
-  //       albumD.albums[albumid].thumbnail = req.file.location;
-  //       const updateQ = {
-  //         $set: {
-  //           albums: albumD.albums,
-  //         },
-  //       };
-  //       album.updateOne(findq, updateQ, (err, result) => {
-  //         console.log(`set thumbnail : ${JSON.stringify(result)}`);
-  //       });
-  //     }
-  //   });
   albumimg.find(findq, (err, data) => {
-    const album = data[0];
-    if (album.images.length == 0) {
+    const albumd = data[0];
+    if (albumd.images.length == 0) {
       const findaq = {
         roomname: roomname,
         // 'albums.albumid': albumid,
