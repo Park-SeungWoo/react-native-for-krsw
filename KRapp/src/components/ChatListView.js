@@ -8,11 +8,13 @@ import {
   TouchableOpacity,
   PlatformColor,
   Alert,
+  Image,
 } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Popoverview from 'react-native-popover-view';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useHeaderHeight} from '@react-navigation/stack';
+import {ContextMenuButton} from 'react-native-ios-context-menu';
 import DateBar from './DateBar';
 
 const isDarkmode = Appearance.getColorScheme() == 'dark';
@@ -27,6 +29,8 @@ const ChatListView = ({
   partnick,
   lastidx,
   moredata,
+  avartar,
+  showavartarmodal,
 }) => {
   // avartar
   const showavartar = chat.item.avartar;
@@ -140,7 +144,17 @@ const ChatListView = ({
                   {showavartar ? (
                     <>
                       <Text style={styles.nametxt}>{partnick}</Text>
-                      <View style={styles.avatar}></View>
+                      <TouchableOpacity
+                        style={styles.avatar}
+                        onPress={showavartarmodal}
+                        activeOpacity={0.6}>
+                        <Image
+                          style={styles.avartarimg}
+                          source={{
+                            uri: avartar,
+                          }}
+                        />
+                      </TouchableOpacity>
                     </>
                   ) : null}
                 </View>
@@ -280,8 +294,13 @@ const styles = StyleSheet.create({
     height: 35,
     position: 'absolute',
     top: -20,
-    borderRadius: 13,
+    borderRadius: 14,
     backgroundColor: '#f1f1f1',
+  },
+  avartarimg: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 13,
   },
   datetxt: {
     fontSize: 10,

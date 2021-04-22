@@ -5,6 +5,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Home from '../pages/main/Home';
 import AccountStacknav from './AccountStacknav';
 import ChatStacknav from '../navigators/ChatStacknav';
+import HomeStacknav from '../navigators/HomeStacknav';
 
 const Tab = createBottomTabNavigator();
 
@@ -19,7 +20,7 @@ const MainTabnav = ({route}) => {
         tabBarIcon: ({color, size}) => {
           let iconName = '';
 
-          if (route.name == 'Home') iconName = 'home';
+          if (route.name == 'Homenav') iconName = 'home';
           else if (route.name == 'Accountnav') iconName = 'person';
           else if (route.name == 'Chatroom') iconName = 'chatbubbles';
           else iconName = 'alert';
@@ -33,7 +34,7 @@ const MainTabnav = ({route}) => {
             ? false
             : true,
       })}>
-      <Tab.Screen name="Home" component={Home} />
+      <Tab.Screen name="Homenav" component={HomeStacknav} />
       <Tab.Screen
         name="Chatroom"
         component={ChatStacknav}

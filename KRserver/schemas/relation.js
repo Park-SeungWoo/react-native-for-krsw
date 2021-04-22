@@ -22,7 +22,7 @@ const relationSchema = new Schema({
     type: String,
     require: true,
   },
-  micknames: {
+  nicknames: {
     type: Array,
     require: true,
   },

@@ -10,7 +10,6 @@ router.use(morgan('dev'));
 
 router.post('/add', (req, res, next) => {
   const userinfo = req.body;
-  console.log(userinfo);
   let user = new Users({
     name: userinfo.name,
     sex: userinfo.sex,
@@ -20,7 +19,10 @@ router.post('/add', (req, res, next) => {
     id: userinfo.id,
     password: userinfo.pw,
     token: userinfo.token,
+    avartar:
+      'https://krapp-bucket.s3.ap-northeast-2.amazonaws.com/blank-profile-picture-973460_1280.png',
   });
+  console.log(user);
   try {
     user.save();
     console.log('saved!');

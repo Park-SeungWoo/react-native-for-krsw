@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React, {useEffect} from 'react';
-import {Appearance, Alert} from 'react-native';
+import {Appearance, Alert, PlatformColor} from 'react-native';
 import {
   NavigationContainer,
   DarkTheme,
@@ -128,7 +128,7 @@ const App = () => {
             options={{
               headerTransparent: true,
               headerBackTitleVisible: false,
-              headerTintColor: '#f1f1f1',
+              headerTintColor: PlatformColor('label'),
             }}
           />
         </Stack.Navigator>

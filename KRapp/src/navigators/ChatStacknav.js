@@ -10,7 +10,7 @@ const ChatStacknav = ({navigation, route}) => {
       <Stack.Screen
         name="Chatfront"
         component={Chatfront}
-        initialParams={route.params}
+        initialParams={route.params.params}
         options={{
           gestureEnabled: false,
           headerShown: false,

@@ -3,10 +3,12 @@ const morgan = require('morgan'); // for log
 const router = express.Router();
 const relation = require('../schemas/relation');
 const temprelation = require('../schemas/temprelation');
+const album = require('../schemas/album');
 const mongoose = require('mongoose');
 const Relation = mongoose.model('relation');
 const Temprelation = mongoose.model('temprelation');
 const Chats = mongoose.model('chat');
+const Album = mongoose.model('album');
 
 router.use(express.json());
 router.use(morgan('dev'));
@@ -16,7 +18,6 @@ router.get('/find', (req, res, next) => {
   relation.find({persons: {$in: [req.query.id]}}, (err, user) => {
     if (err) res.send(err);
     else if (user.length != 0) {
-      console.log(user);
       res.send(user[0]);
     } else res.send(false);
   });
@@ -97,8 +98,19 @@ router.post('/addrelation', (req, res, next) => {
     roomname: roomname,
     chat: new Array(),
   });
+  const albumdata = new Album({
+    roomname: roomname,
+    albums: {
+      addbtn: {
+        name: '앨범 추가',
+        albumid: 'addbtn',
+      },
+    },
+    changedalbum: '',
+  });
   data.save();
   chatting.save();
+  albumdata.save();
   res.redirect('/');
 });
 

@@ -30,6 +30,10 @@ const reservedmsg = new Schema({
     type: String,
     require: true,
   },
+  toname: {
+    type: String,
+    require: true,
+  },
 });
 
 module.exports = mongoose.model('reservedmsg', reservedmsg);

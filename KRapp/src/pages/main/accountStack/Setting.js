@@ -12,6 +12,7 @@ const Setting = ({navigation, route}) => {
   const _logout = async () => {
     // logout시 필요한 data들 다 정리하고 나가기
     await AsyncStorage.removeItem('@LoginInfo');
+    await AsyncStorage.removeItem('@CoupleInfo');
     navigation.dispatch(
       CommonActions.reset({
         index: 0,

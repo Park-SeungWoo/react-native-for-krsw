@@ -34,6 +34,10 @@ const userSchema = new Schema({
     type: String,
     require: true,
   },
+  avartar: {
+    type: String,
+    require: false,
+  },
 });
 
 module.exports = mongoose.model('user', userSchema);

@@ -65,6 +65,7 @@ const token = require('./routes/token');
 const couple = require('./routes/couple');
 const chat = require('./routes/chatdata');
 const reserved = require('./routes/reserved');
+const image = require('./routes/image');
 
 app.use('/login', login);
 app.use('/register', register);
@@ -73,6 +74,7 @@ app.use('/token', token);
 app.use('/couple', couple);
 app.use('/chat', chat);
 app.use('/reserved', reserved);
+app.use('/image', image);
 
 app.get('/', (req, res) => {
   res.send('hello ec2!');

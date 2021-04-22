@@ -36,10 +36,13 @@ const Login = ({navigation, route}) => {
         if (coupleinfo != null) {
           const coupledata = await JSON.parse(coupleinfo);
           navigation.navigate('Main', {
-            screen: 'Home',
+            screen: 'Homenav',
             params: {
-              userdata: data.userdata,
-              coupledata: coupledata,
+              screen: 'Home',
+              params: {
+                userdata: data.userdata,
+                coupledata: coupledata,
+              },
             },
           });
           // couple data doesn't exists

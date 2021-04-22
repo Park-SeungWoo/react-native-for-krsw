@@ -10,31 +10,31 @@ PODS:
     - React-Core (= 0.64.0)
     - React-jsi (= 0.64.0)
     - ReactCommon/turbomodule/core (= 0.64.0)
-  - Firebase/CoreOnly (7.9.0):
-    - FirebaseCore (= 7.9.0)
-  - Firebase/Messaging (7.9.0):
+  - Firebase/CoreOnly (7.10.0):
+    - FirebaseCore (= 7.10.0)
+  - Firebase/Messaging (7.10.0):
     - Firebase/CoreOnly
-    - FirebaseMessaging (~> 7.9.0)
-  - FirebaseCore (7.9.0):
+    - FirebaseMessaging (~> 7.10.0)
+  - FirebaseCore (7.10.0):
     - FirebaseCoreDiagnostics (~> 7.4)
     - GoogleUtilities/Environment (~> 7.0)
     - GoogleUtilities/Logger (~> 7.0)
-  - FirebaseCoreDiagnostics (7.10.0):
+  - FirebaseCoreDiagnostics (7.11.0):
     - GoogleDataTransport (~> 8.4)
     - GoogleUtilities/Environment (~> 7.0)
     - GoogleUtilities/Logger (~> 7.0)
     - nanopb (~> 2.30908.0)
-  - FirebaseInstallations (7.10.0):
+  - FirebaseInstallations (7.11.0):
     - FirebaseCore (~> 7.0)
     - GoogleUtilities/Environment (~> 7.0)
     - GoogleUtilities/UserDefaults (~> 7.0)
     - PromisesObjC (~> 1.2)
-  - FirebaseInstanceID (7.10.0):
+  - FirebaseInstanceID (7.11.0):
     - FirebaseCore (~> 7.0)
     - FirebaseInstallations (~> 7.0)
     - GoogleUtilities/Environment (~> 7.0)
     - GoogleUtilities/UserDefaults (~> 7.0)
-  - FirebaseMessaging (7.9.0):
+  - FirebaseMessaging (7.10.0):
     - FirebaseCore (~> 7.0)
     - FirebaseInstanceID (~> 7.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.0)
@@ -382,7 +382,9 @@ PODS:
     - React-cxxreact (= 0.64.0)
     - React-jsi (= 0.64.0)
     - React-perflogger (= 0.64.0)
-  - RNCAsyncStorage (1.15.1):
+  - rn-fetch-blob (0.12.0):
+    - React-Core
+  - RNCAsyncStorage (1.15.3):
     - React-Core
   - RNCClipboard (1.7.0):
     - React-Core
@@ -390,18 +392,27 @@ PODS:
     - React
   - RNDateTimePicker (3.4.2):
     - React-Core
-  - RNFBApp (11.2.0):
-    - Firebase/CoreOnly (= 7.9.0)
+  - RNFBApp (11.3.2):
+    - Firebase/CoreOnly (= 7.10.0)
     - React-Core
-  - RNFBMessaging (11.2.0):
-    - Firebase/Messaging (= 7.9.0)
+  - RNFBMessaging (11.3.2):
+    - Firebase/Messaging (= 7.10.0)
     - React-Core
     - RNFBApp
   - RNGestureHandler (1.10.3):
     - React-Core
+  - RNImageCropPicker (0.36.0):
+    - React-Core
+    - React-RCTImage
+    - RNImageCropPicker/QBImagePickerController (= 0.36.0)
+    - TOCropViewController
+  - RNImageCropPicker/QBImagePickerController (0.36.0):
+    - React-Core
+    - React-RCTImage
+    - TOCropViewController
   - RNNotifee (1.4.0):
     - React-Core
-  - RNReanimated (2.0.1):
+  - RNReanimated (2.1.0):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -434,6 +445,7 @@ PODS:
     - React-Core
   - RNVectorIcons (8.1.0):
     - React-Core
+  - TOCropViewController (2.6.0)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
     - Yoga (~> 1.14)
@@ -491,6 +503,7 @@ DEPENDENCIES:
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - React-runtimeexecutor (from `../node_modules/react-native/ReactCommon/runtimeexecutor`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - rn-fetch-blob (from `../node_modules/rn-fetch-blob`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
@@ -498,6 +511,7 @@ DEPENDENCIES:
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
+  - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
   - "RNNotifee (from `../node_modules/@notifee/react-native`)"
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
@@ -527,6 +541,7 @@ SPEC REPOS:
     - nanopb
     - OpenSSL-Universal
     - PromisesObjC
+    - TOCropViewController
     - YogaKit
 
 EXTERNAL SOURCES:
@@ -592,6 +607,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/runtimeexecutor"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  rn-fetch-blob:
+    :path: "../node_modules/rn-fetch-blob"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
   RNCClipboard:
@@ -606,6 +623,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/messaging"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
+  RNImageCropPicker:
+    :path: "../node_modules/react-native-image-crop-picker"
   RNNotifee:
     :path: "../node_modules/@notifee/react-native"
   RNReanimated:
@@ -623,12 +642,12 @@ SPEC CHECKSUMS:
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   FBLazyVector: 49cbe4b43e445b06bf29199b6ad2057649e4c8f5
   FBReactNativeSpec: 1e25e755006edd732c7a04f2ba2d5c392f8d52f8
-  Firebase: d8bd6bd34b4c7ed57bfdd056c66ff5adcdde53ab
-  FirebaseCore: 0798738ad1ae0fda67e17c7b9081241c431c6859
-  FirebaseCoreDiagnostics: 5662a3823ffcc0acbaa9a21ba5ed302fac634705
-  FirebaseInstallations: bf2ec8dbf36ff4c91af6b9a003d15855757680c1
-  FirebaseInstanceID: 5ad92c898e1328b66e8dd58811964d6fe4d334c3
-  FirebaseMessaging: 5f83f200a251c44f647f36cb43e557be09889e8d
+  Firebase: fffddd0bab8677d07376538365faa93ff3889b39
+  FirebaseCore: ec566d917b2195fc2610aeb148dae99f57a788f9
+  FirebaseCoreDiagnostics: 68ad972f99206cef818230f3f3179d52ccfb7f8c
+  FirebaseInstallations: a58d4f72ec5861840b84df489f2668d970df558a
+  FirebaseInstanceID: ad5135045a498d7775903efd39762d2cdfa1be27
+  FirebaseMessaging: 76b3058cef7f339cf10db196e03bbbb2165fb5d7
   Flipper: d3da1aa199aad94455ae725e9f3aa43f3ec17021
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
   Flipper-Folly: f7a3caafbd74bda4827954fd7a6e000e36355489
@@ -670,17 +689,20 @@ SPEC CHECKSUMS:
   React-RCTVibration: 0fd6b21751a33cb72fce1a4a33ab9678416d307a
   React-runtimeexecutor: cad74a1eaa53ee6e7a3620231939d8fe2c6afcf0
   ReactCommon: cfe2b7fd20e0dbd2d1185cd7d8f99633fbc5ff05
-  RNCAsyncStorage: 08719e311ab90492c2dafd6d6fb7ffb396493638
+  rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
+  RNCAsyncStorage: 9924d6b4affe9081f08073f354ec6b09c839ff31
   RNCClipboard: 245417a78ab585e0d4d83926c28907e7b2bc24bd
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNDateTimePicker: fd6f6d37ec23f5f16a4870a9891305a75d556001
-  RNFBApp: d9ab9f2e63c70a9974294bb44c749b728cd4028f
-  RNFBMessaging: bab6a3073a3ac1ecff593c74b4f797cbc6cca562
+  RNFBApp: f3f728097b3f8f51a4afcec01424534a3a6106af
+  RNFBMessaging: 3a5255d2be323a135f215669fe48d615f5721177
   RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
+  RNImageCropPicker: e641bf83ac47324994cac139bde74635ec52c17c
   RNNotifee: 35452c5319a6b17e93235bce8c4a2dd1aa19c8b3
-  RNReanimated: 7d2b97cf2dd7c8c69956080fe911edc08cf0a8c7
+  RNReanimated: b8c8004b43446e3c2709fe64b2b41072f87428ad
   RNScreens: f7ad633b2e0190b77b6a7aab7f914fad6f198d8d
   RNVectorIcons: 31cebfcf94e8cf8686eb5303ae0357da64d7a5a4
+  TOCropViewController: 3105367e808b7d3d886a74ff59bf4804e7d3ab38
   Yoga: 8c8436d4171c87504c648ae23b1d81242bdf3bbf
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 

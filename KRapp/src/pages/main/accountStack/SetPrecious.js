@@ -194,8 +194,8 @@ const SetPrecious = ({navigation, route}) => {
       <View style={styles.topper}>
         <Text style={styles.txt}>안녕하세요 {name}님!</Text>
         <Text style={styles.txt}>
-          {sex == 'M' ? '여자친구' : '남자친구'} 에게{'\n'}ID : {id}를
-          알려주거나{'\n'}아래 사항들을 입력해주세요!
+          상대방에게{'\n'}ID : {id}를 알려주거나{'\n'}아래 사항들을
+          입력해주세요!
         </Text>
       </View>
       <TouchableWithoutFeedback

@@ -9,8 +9,6 @@ import {
   Dimensions,
   Keyboard,
   PlatformColor,
-  TouchableOpacity,
-  ScrollView,
   Alert,
 } from 'react-native';
 import {useHeaderHeight} from '@react-navigation/stack';
@@ -19,14 +17,15 @@ import {KeyboardAccessoryView} from '@flyerhq/react-native-keyboard-accessory-vi
 import 'react-native-get-random-values'; // for nanoid
 import {nanoid} from 'nanoid'; // to make unique id
 import {SafeAreaView} from 'react-native-safe-area-context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 // import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {ModalView} from 'react-native-ios-modal';
 import {ContextMenuButton} from 'react-native-ios-context-menu';
+import ImagePreview from 'react-native-image-preview';
 import sendPushNotification from '../../methods/sendPushNotification';
 import {IPADDR} from '../../../env.json';
 import ChatListView from '../../components/ChatListView';
 import ModalNestedView from '../../components/ModalNestedView';
+import getavartar from '../../methods/getAvartar';
 
 const isDarkmode = Appearance.getColorScheme() == 'dark';
 const socket = io(`ws://${IPADDR}`);
@@ -80,6 +79,11 @@ const getDeleteStatusData = (chat, align, id) => {
   return {idx: idx, data: data, status: status};
 };
 
+const getPartnersavartar = async (pid, pname) => {
+  const pavartar = await getavartar(pid, pname, {status: 'partner'});
+  return pavartar;
+};
+
 const Chat = ({navigation, route}) => {
   const {userdata, coupledata} = route.params;
 
@@ -92,18 +96,15 @@ const Chat = ({navigation, route}) => {
   const [chatrange, setChatrange] = useState({start: 0, end: 30});
   const [chatleft, setChatleft] = useState(true);
   const [modalopened, setModalopened] = useState(false);
+  const [partavartar, setPartavartar] = useState(
+    'https://krapp-bucket.s3.ap-northeast-2.amazonaws.com/blank-profile-picture-973460_1280.png',
+  );
+  const [showavartar, setShowavartar] = useState(false);
   const headerH = useHeaderHeight();
   const modalRef = useRef();
   const chatScrollRef = useRef();
 
   //////////////////////////////////////useEffect
-  // partnet's id
-  useEffect(() => {
-    const idx = userdata.name == coupledata.firstp ? 1 : 0;
-    const pid = coupledata.persons[idx];
-    setPartID(pid);
-  }, []);
-
   //nickname
   useEffect(() => {
     const nick = getPartnerNick();
@@ -113,10 +114,15 @@ const Chat = ({navigation, route}) => {
     });
   }, []);
 
-  // when come back from other tabs get data
+  // when come back from other tabs get data, partner's id, avartar
   useEffect(() => {
     const unsub = navigation.addListener('focus', async () => {
       setChatsplus(await getChattingdata(coupledata.roomname));
+      const idx = userdata.name == coupledata.firstp ? 1 : 0;
+      const pid = coupledata.persons[idx];
+      const pname = idx ? coupledata.secondp : coupledata.firstp;
+      setPartID(pid);
+      setPartavartar(await getPartnersavartar(pid, pname));
     });
     return unsub;
   }, [navigation]);
@@ -482,9 +488,14 @@ const Chat = ({navigation, route}) => {
         fromdate: Date.now(),
         roomname: roomname,
         reserveid: nanoid(),
+        toname: partnick,
       }),
     };
     fetch(`http://${IPADDR}/reserved/set`, option);
+  };
+
+  const showAvartarImg = () => {
+    setShowavartar(true);
   };
 
   const renderChats = panHandlers => {
@@ -508,6 +519,8 @@ const Chat = ({navigation, route}) => {
             partnick={partnick}
             lastidx={chatsplus.length - 1}
             moredata={chatleft}
+            avartar={partavartar}
+            showavartarmodal={showAvartarImg}
           />
         )}
         keyExtractor={item => item.uniqueid}
@@ -596,6 +609,15 @@ const Chat = ({navigation, route}) => {
           modalClose={modalClose}
         />
       </ModalView>
+
+      {/* image modal */}
+      <ImagePreview
+        visible={showavartar}
+        source={{
+          uri: partavartar,
+        }}
+        close={() => setShowavartar(false)}
+      />
     </SafeAreaView>
   );
 };
